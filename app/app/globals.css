@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-dark: #0A0A0A;
+  --color-dark: #131313;
 }
 @font-face {
   font-family: Google Sans;

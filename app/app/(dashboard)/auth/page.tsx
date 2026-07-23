@@ -32,7 +32,7 @@ function AuthCard() {
   return (
     <div className="flex flex-col z-50 items-center justify-center">
       <Image
-        src="/logo.svg"
+        src="/logo.png"
         alt="Logo"
         width={1000}
         height={1000}
@@ -46,10 +46,10 @@ function AuthCard() {
       <button
         onClick={handleLogin}
         disabled={loading}
-        className="bg-linear-to-b from-white w-full flex items-center gap-2 justify-center p-2.5 my-6 cursor-pointer rounded-xl text-lg font-medium to-[#C9C9C9] disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+        className="bg-linear-to-b from-[#303030] text-white w-[85%] flex items-center gap-3 justify-center p-2.5 my-6 cursor-pointer rounded-full text-lg font-medium to-[#212121] disabled:opacity-60 disabled:backdrop-blur-3xl disabled:cursor-not-allowed transition-opacity"
       >
         {loading ? (
-          <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+          <span className="size-4.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
         ) : (
           <Image
             src="/github.svg"
@@ -62,7 +62,7 @@ function AuthCard() {
         {loading ? "Redirecting..." : "Continue with Github"}
       </button>
 
-      <p className="text-white/50 w-xs text-center mx-auto">
+      <p className="text-white/50 w-60 text-center mx-auto">
         By continuing, you agree to Helix&apos;s{" "}
         <Link href="/terms" className="text-white font-medium">
           Terms
