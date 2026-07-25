@@ -46,10 +46,10 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
   }, [load]);
 
   return (
-    <div className="flex h-full flex-col overflow-auto">
+    <div className="scrollbar-none flex h-full flex-col overflow-auto">
       <div className="border-b border-white/5 px-6 pt-5 pb-5">
         <Link
-          href="/dashboard"
+          href="/dashboard/tunnels"
           className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70"
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} size={14} color="currentColor" />

@@ -1,22 +1,6 @@
-import { TunnelList } from "@/components/TunnelList";
+import { DashboardHome } from "@/components/DashboardHome";
 import { getPublicRelayUrl } from "@/lib/relay";
 
 export default function DashboardPage() {
-  const publicBase = getPublicRelayUrl();
-
-  return (
-    <div className="flex h-full flex-col overflow-auto">
-      <div className="flex items-end justify-between gap-4 px-6 pt-6 pb-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
-            Tunnels
-          </h1>
-          <p className="mt-1 text-sm text-white/40">
-            Live status and request counts from your relay.
-          </p>
-        </div>
-      </div>
-      <TunnelList publicBase={publicBase} />
-    </div>
-  );
+  return <DashboardHome publicBase={getPublicRelayUrl()} />;
 }

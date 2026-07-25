@@ -4,16 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Home01Icon,
-  WebhookIcon,
-} from "@hugeicons/core-free-icons";
+import { Home01Icon, WebhookIcon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { href: "/dashboard", label: "Home", icon: Home01Icon, match: "home" as const },
   {
     href: "/dashboard",
+    label: "Home",
+    icon: Home01Icon,
+    match: "home" as const,
+  },
+  {
+    href: "/dashboard/tunnels",
     label: "Tunnels",
     icon: WebhookIcon,
     match: "tunnels" as const,

@@ -61,7 +61,7 @@ export function DocsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-dark text-white">
+    <div className="min-h-screen overflow-x-hidden bg-dark text-white">
       <header className="sticky top-0 z-20 border-b border-white/5 bg-dark/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
