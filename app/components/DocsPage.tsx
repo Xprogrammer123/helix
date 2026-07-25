@@ -62,7 +62,7 @@ export function DocsPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-dark text-white">
-      <header className="sticky top-0 z-20 border-b border-white/5 bg-dark/90 backdrop-blur-md">
+      <header className="fixed w-screen top-0 z-20 border-b border-white/5 bg-dark/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
             <Image
@@ -84,8 +84,8 @@ export function DocsPage() {
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-5xl gap-10 px-6 py-10">
-        <aside className="sticky top-24 hidden h-fit w-44 shrink-0 md:block">
+      <div className="mx-auto flex max-w-5xl mt-12 gap-10 px-6 py-10">
+        <aside className="fixed top-24 hidden h-fit w-44 shrink-0 md:block">
           <nav className="flex flex-col gap-1">
             {sections.map((s) => (
               <a
@@ -104,7 +104,7 @@ export function DocsPage() {
           </nav>
         </aside>
 
-        <article className="min-w-0 flex-1 space-y-16 pb-24">
+        <article className="min-w-0 ml-64 flex-1 space-y-16 pb-24">
           <section id="getting-started" className="scroll-mt-28">
             <h1 className="text-3xl font-semibold tracking-tight">
               Getting Started
@@ -112,19 +112,19 @@ export function DocsPage() {
             <p className="mt-3 text-white/45">
               Helix exposes a local port through your self-hosted relay at a
               path like{" "}
-              <code className="font-mono text-accent">
+              <code className="font-mono text-white">
                 /tunnel/&#123;name&#125;/
               </code>
               .
             </p>
 
             <h2 className="mt-8 text-lg font-medium">1. Install the CLI</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-accent">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
               npm install -g helix
             </pre>
 
             <h2 className="mt-8 text-lg font-medium">2. Log in</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-accent">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
               helix login
             </pre>
             <p className="mt-3 text-sm text-white/40">
@@ -136,7 +136,7 @@ export function DocsPage() {
             </p>
 
             <h2 className="mt-8 text-lg font-medium">3. Start a tunnel</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-accent">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
               helix myapp 3000
             </pre>
             <p className="mt-3 text-sm text-white/40">
@@ -168,7 +168,7 @@ export function DocsPage() {
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   <tr>
-                    <td className="px-4 py-3 font-mono text-accent">
+                    <td className="px-4 py-3 font-mono text-white">
                       helix login
                     </td>
                     <td className="px-4 py-3 text-white/50">
@@ -177,7 +177,7 @@ export function DocsPage() {
                     </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-mono text-accent">
+                    <td className="px-4 py-3 font-mono text-white">
                       helix &lt;name&gt; &lt;port&gt;
                     </td>
                     <td className="px-4 py-3 text-white/50">
@@ -229,7 +229,7 @@ export function DocsPage() {
                 <tbody className="divide-y divide-white/5">
                   {envVars.map((v) => (
                     <tr key={v.name}>
-                      <td className="px-4 py-3 font-mono text-accent whitespace-nowrap">
+                      <td className="px-4 py-3 font-mono text-white whitespace-nowrap">
                         {v.name}
                       </td>
                       <td className="px-4 py-3 text-white/50">{v.desc}</td>
