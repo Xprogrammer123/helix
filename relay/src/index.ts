@@ -17,10 +17,17 @@ type RelayMessage = {
 
 function rewriteHtml(body: string, name: string): string {
   const prefix = `/tunnel/${name}`;
-  return body.replace(
+  let rewritten = body.replace(
     /(href|src|action)=(["'])\/(?!\/|tunnel\/)/g,
     `$1=$2${prefix}/`
   );
+
+  const swScript = `<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('${prefix}/sw.js');}</script>`;
+  rewritten = rewritten.includes('</head>')
+    ? rewritten.replace('</head>', `${swScript}</head>`)
+    : swScript + rewritten;
+
+  return rewritten;
 }
 
 const app = express();
@@ -97,6 +104,27 @@ setInterval(() => {
   }
 }, 30000);
 
+app.get('/tunnel/:name/sw.js', (req, res) => {
+  const { name } = req.params;
+  res.set('Content-Type', 'application/javascript');
+  res.send(`
+const PREFIX = '/tunnel/${name}';
+
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  if (url.origin === self.location.origin && !url.pathname.startsWith(PREFIX) && !url.pathname.startsWith('/tunnel/')) {
+    const newUrl = new URL(url);
+    newUrl.pathname = PREFIX + url.pathname;
+    event.respondWith(fetch(new Request(newUrl.toString(), event.request)));
+    return;
+  }
+});
+  `.trim());
+});
+
 app.use('/tunnel/:name', (req: Request, res: Response) => {
   const { name } = req.params;
   const ws = tunnels.get(name);
@@ -114,31 +142,33 @@ app.use('/tunnel/:name', (req: Request, res: Response) => {
       res.status(504).send('Tunnel timeout');
     }, 10000);
 
-    pending.set(requestId, (msg) => {
-      clearTimeout(timeout);
-      res.status(msg.status || 200);
+   pending.set(requestId, (msg) => {
+  clearTimeout(timeout);
+  res.status(msg.status || 200);
 
-      const contentType = msg.headers?.['content-type'] || '';
-      let responseBody = msg.body || '';
-      if (contentType.includes('text/html')) {
-        responseBody = rewriteHtml(responseBody, name);
-      }
-      for (const [k, v] of Object.entries(msg.headers || {})) {
-        if (['content-length', 'content-encoding'].includes(k.toLowerCase())) continue;
-        res.set(k, v);
-      }
-      res.send(responseBody);
+  const contentType = msg.headers?.['content-type'] || '';
+  let bodyBuffer = Buffer.from(msg.body || '', 'base64');
 
-      // fire-and-forget log, don't block the response on it
-      db.createDocument(DB_ID, 'requests', ID.unique(), {
-        tunnel_name: name,
-        method: req.method,
-        path,
-        status: msg.status || 200,
-        duration_ms: Date.now() - startedAt,
-        timestamp: new Date().toISOString(),
-      }).catch((err) => console.error('[relay] failed to log request:', err));
-    });
+  if (contentType.includes('text/html')) {
+    const rewritten = rewriteHtml(bodyBuffer.toString('utf-8'), name);
+    bodyBuffer = Buffer.from(rewritten, 'utf-8');
+  }
+
+  for (const [k, v] of Object.entries(msg.headers || {})) {
+    if (['content-length', 'content-encoding', 'transfer-encoding'].includes(k.toLowerCase())) continue;
+    res.set(k, v as string);
+  }
+  res.send(bodyBuffer);
+
+  db.createDocument(DB_ID, 'requests', ID.unique(), {
+    tunnel_name: name,
+    method: req.method,
+    path,
+    status: msg.status || 200,
+    duration_ms: Date.now() - startedAt,
+    timestamp: new Date().toISOString(),
+  }).catch((err) => console.error('[relay] failed to log request:', err));
+});
 
     ws.send(JSON.stringify({ type: 'request', requestId, method: req.method, path, headers: req.headers, body }));
   });

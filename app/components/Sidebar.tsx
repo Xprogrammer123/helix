@@ -12,15 +12,15 @@ const Sidebar = () => {
               {/* <Hugeicons */}
           </div>
           <div className="flex flex-col w-full mt-10 gap-2">
-              <Link href="/app" className="flex gap-2 items-center p-2 cursor-pointer px-4 rounded-full text-white bg-linear-to-r from-[#303030] to-[#212121]">
+              <Link href="/app" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white bg-linear-to-r from-[#252525] to-[#171717]">
                   <HugeiconsIcon icon={DashboardSquare03FreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
                   <p className="text-white font-medium text-[15px]">Overview</p>
               </Link>
-              <Link href="/app/tunnels" className="flex gap-2 items-center p-2 cursor-pointer px-4 rounded-full text-white">
+              <Link href="/app/tunnels" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white">
                   <HugeiconsIcon icon={WebhookFreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
                   <p className="text-white font-medium text-[15px]">Tunnels</p>
               </Link>
-              <Link href="/app/settings" className="flex gap-2 items-center p-2 cursor-pointer px-4 rounded-full text-white">
+              <Link href="/app/settings" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white">
                   <HugeiconsIcon icon={Settings03FreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
                   <p className="text-white font-medium text-[15px]">Settings</p>
               </Link>
