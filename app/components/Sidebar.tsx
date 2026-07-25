@@ -1,32 +1,72 @@
-import Image from 'next/image'
-import React from 'react'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { DashboardSquare03FreeIcons, Settings03FreeIcons, WebhookFreeIcons } from '@hugeicons/core-free-icons'
-import Link from 'next/link'
+"use client";
 
-const Sidebar = () => {
-  return (
-      <div className='w-72 pr-3 h-full'>
-          <div className="flex justify-between items-center w-full">
-              <Image src="/logo.png" alt="Logo" width={1000} height={1000} className='h-auto w-17' />
-              {/* <Hugeicons */}
-          </div>
-          <div className="flex flex-col w-full mt-10 gap-2">
-              <Link href="/app" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white bg-linear-to-r from-[#252525] to-[#171717]">
-                  <HugeiconsIcon icon={DashboardSquare03FreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
-                  <p className="text-white font-medium text-[15px]">Overview</p>
-              </Link>
-              <Link href="/app/tunnels" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white">
-                  <HugeiconsIcon icon={WebhookFreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
-                  <p className="text-white font-medium text-[15px]">Tunnels</p>
-              </Link>
-              <Link href="/app/settings" className="flex gap-2 items-center p-2 cursor-pointer px-3 rounded-xl text-white">
-                  <HugeiconsIcon icon={Settings03FreeIcons} className="size-4.5 text-white" strokeWidth={2.0} />
-                  <p className="text-white font-medium text-[15px]">Settings</p>
-              </Link>
-            </div>
-    </div>
-  )
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Home01Icon,
+  WebhookIcon,
+} from "@hugeicons/core-free-icons";
+import { cn } from "@/lib/utils";
+
+const nav = [
+  { href: "/dashboard", label: "Home", icon: Home01Icon, match: "home" as const },
+  {
+    href: "/dashboard",
+    label: "Tunnels",
+    icon: WebhookIcon,
+    match: "tunnels" as const,
+  },
+];
+
+function isActive(pathname: string, match: "home" | "tunnels") {
+  if (match === "home") return pathname === "/dashboard";
+  return pathname.startsWith("/dashboard/tunnels");
 }
 
-export default Sidebar
+export function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="flex h-full w-64 shrink-0 flex-col pr-3">
+      <div className="flex items-center gap-2.5 rounded-xl px-2 py-2">
+        <Image
+          src="/logo.png"
+          alt="Helix"
+          width={120}
+          height={40}
+          className="h-8 w-auto"
+          priority
+        />
+        <span className="text-[15px] font-semibold text-white">Helix</span>
+      </div>
+
+      <nav className="mt-8 flex flex-col gap-1">
+        {nav.map((item) => {
+          const active = isActive(pathname, item.match);
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-medium transition-colors",
+                active
+                  ? "bg-[#252525] text-white"
+                  : "text-white/55 hover:bg-white/5 hover:text-white/80"
+              )}
+            >
+              <HugeiconsIcon
+                icon={item.icon}
+                size={18}
+                color="currentColor"
+                strokeWidth={2}
+              />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}

@@ -2,7 +2,10 @@
 
 @theme inline {
   --color-dark: #131313;
+  --color-accent: #22c55e;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
 }
+
 @font-face {
   font-family: Google Sans;
   src: url("/GoogleSansFlex-VariableFont_GRAD\,ROND\,opsz\,slnt\,wdth\,wght.ttf");
@@ -11,4 +14,9 @@
 * {
   font-family: "Google Sans", sans-serif;
   letter-spacing: -0.5px;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0;
 }

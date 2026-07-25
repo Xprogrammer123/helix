@@ -2,6 +2,9 @@ import WebSocket from 'ws';
 import http from 'http';
 import zlib from 'zlib';
 import { login, loadConfig } from './auth.js';
+import WS from 'ws';
+
+const localWsConnections = new Map<string, WS>();
 
 type RelayMessage = {
   type: 'request' | 'response';

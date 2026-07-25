@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 import http from 'http';
 import crypto from 'crypto';
+import { WebSocketServer as WSServer } from 'ws';
 import { db, DB_ID, ID, Query } from './db.js';
 
 type RelayMessage = {
@@ -76,14 +77,31 @@ wss.on('connection',  async (ws, req) => {
   lastSeen.set(name, Date.now());
   console.log(`[relay] registered: ${name} (user: ${user.username})`);
 
-  ws.on('message', (data) => {
-    const msg: RelayMessage = JSON.parse(data.toString());
-    lastSeen.set(name, Date.now());
-    if (msg.type === 'response' && pending.has(msg.requestId)) {
-      pending.get(msg.requestId)!(msg);
-      pending.delete(msg.requestId);
+ ws.on('message', (data) => {
+  const msg: any = JSON.parse(data.toString());
+  lastSeen.set(name, Date.now());
+
+  if (msg.type === 'response' && pending.has(msg.requestId)) {
+    pending.get(msg.requestId)!(msg);
+    pending.delete(msg.requestId);
+    return;
+  }
+
+  if (msg.type === 'ws-message') {
+    const browserWs = browserSockets.get(msg.connectionId);
+    if (browserWs && browserWs.readyState === WebSocket.OPEN) {
+      browserWs.send(Buffer.from(msg.data, 'base64'), { binary: msg.isBinary });
     }
-  });
+    return;
+  }
+
+  if (msg.type === 'ws-close') {
+    const browserWs = browserSockets.get(msg.connectionId);
+    browserWs?.close();
+    browserSockets.delete(msg.connectionId);
+    return;
+  }
+});
 
   ws.on('close', () => {
     tunnels.delete(name);
@@ -284,4 +302,45 @@ app.get('/api/tunnels', async (req, res) => {
 });
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
+const wsProxyServer = new WSServer({ noServer: true });
+const browserSockets = new Map<string, WebSocket>(); // connectionId -> browser-side ws
+
+server.on('upgrade', (req, socket, head) => {
+  const url = new URL(req.url ?? '', 'http://localhost');
+
+  // let the existing /register upgrade (CLI control connections) pass through untouched
+  if (url.pathname === '/register') return;
+
+  const match = url.pathname.match(/^\/tunnel\/([^/]+)(\/.*)?$/);
+  if (!match) return socket.destroy();
+
+  const [, name, rest] = match;
+  const clientWs = tunnels.get(name);
+  if (!clientWs) return socket.destroy();
+
+  wsProxyServer.handleUpgrade(req, socket, head, (browserWs) => {
+    const connectionId = crypto.randomUUID();
+    browserSockets.set(connectionId, browserWs);
+
+    clientWs.send(JSON.stringify({
+      type: 'ws-open',
+      connectionId,
+      path: rest || '/',
+    }));
+
+    browserWs.on('message', (data, isBinary) => {
+      clientWs.send(JSON.stringify({
+        type: 'ws-message',
+        connectionId,
+        data: Buffer.from(data as Buffer).toString('base64'),
+        isBinary,
+      }));
+    });
+
+    browserWs.on('close', () => {
+      browserSockets.delete(connectionId);
+      clientWs.send(JSON.stringify({ type: 'ws-close', connectionId }));
+    });
+  });
+});
 server.listen(PORT, () => console.log(`[relay] listening on ${PORT}`));
