@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 import http from 'http';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { WebSocketServer as WSServer } from 'ws';
 import { db, DB_ID, ID, Query } from './db.js';
 import {
