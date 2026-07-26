@@ -37,7 +37,7 @@ export function login(): Promise<{ token: string; username: string }> {
     });
 
     server.listen(CALLBACK_PORT, () => {
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=http://localhost:4000/auth/github/callback&scope=read:user&state=cli`;
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://helix-t47s.onrender.com/auth/github/callback&scope=read:user&state=cli`;
       const opener =
         process.platform === "win32"
           ? 'start ""'

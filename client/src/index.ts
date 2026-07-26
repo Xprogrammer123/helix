@@ -48,10 +48,10 @@ async function main() {
   }
   console.log(`[client] using saved session for ${session.username}`);
 
-  const RELAY_HTTP = (process.env.RELAY_URL || 'ws://localhost:4000/register')
+  const RELAY_HTTP = (process.env.RELAY_URL || 'ws://helix-t47s.onrender.com')
     .replace(/^ws/, 'http')
     .replace(/\/register$/, '');
-  const RELAY_WS = process.env.RELAY_URL || 'ws://localhost:4000/register';
+  const RELAY_WS = process.env.RELAY_URL || 'ws://helix-t47s.onrender.com';
   const { name, localPort, password } = parseArgs(process.argv.slice(2));
 
   const params = new URLSearchParams({ name, token: session.token });
@@ -132,7 +132,7 @@ async function main() {
   ws.on('close', (code, reason) => {
     const msg = reason.toString();
     if (code === 4004 || msg.includes('Free plan allows')) {
-      console.error(`\n${msg || 'Free plan allows 1 active tunnel. Upgrade at helix.dev/dashboard/upgrade to run more.'}`);
+      console.error(`\n${msg || 'Free plan allows 1 active tunnel. Upgrade at helix01.vercel.app/dashboard/upgrade to run more.'}`);
       process.exit(1);
     }
     if (code === 4005 || msg.includes('Password-protected')) {

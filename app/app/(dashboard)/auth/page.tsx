@@ -25,7 +25,7 @@ function AuthCard() {
     setLoading(true);
     // const redirectUri = process.env.NEXT_PUBLIC_WEB_CALLBACK_URL!;
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!;
-    const loginUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent('http://localhost:4000/auth/github/callback')}&scope=read:user&state=web`;
+    const loginUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent('https://helix-t47s.onrender.com/auth/github/callback')}&scope=read:user&state=web`;
     window.location.href = loginUrl;
   };
 

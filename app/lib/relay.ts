@@ -1,5 +1,5 @@
 export function getRelayUrl() {
-  return process.env.RELAY_URL ?? "http://localhost:4000";
+  return process.env.RELAY_URL ?? "https://helix-t47s.onrender.com";
 }
 
 export function getPublicRelayUrl() {
