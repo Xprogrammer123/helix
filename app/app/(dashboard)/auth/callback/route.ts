@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
   const response = NextResponse.redirect(new URL('/app', req.url));
   response.cookies.set('helix_token', data.token, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30, // 30 days
