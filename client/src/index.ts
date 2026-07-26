@@ -2,19 +2,37 @@ import WebSocket from 'ws';
 import http from 'http';
 import zlib from 'zlib';
 import { login, loadConfig } from './auth.js';
-import WS from 'ws';
-
-const localWsConnections = new Map<string, WS>();
 
 type RelayMessage = {
-  type: 'request' | 'response';
-  requestId: string;
+  type: 'request' | 'response' | 'connected';
+  requestId?: string;
   method?: string;
   path?: string;
   headers?: http.IncomingHttpHeaders;
-  body?: string; // base64-encoded
+  body?: string;
   status?: number;
+  plan?: string;
+  tip?: string | null;
 };
+
+function parseArgs(argv: string[]) {
+  const positional: string[] = [];
+  let password: string | undefined;
+
+  for (const arg of argv) {
+    if (arg.startsWith('--password=')) {
+      password = arg.slice('--password='.length);
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  return {
+    name: positional[0] || 'test',
+    localPort: positional[1] || '3000',
+    password,
+  };
+}
 
 async function main() {
   if (process.argv[2] === 'login') {
@@ -30,14 +48,19 @@ async function main() {
   }
   console.log(`[client] using saved session for ${session.username}`);
 
-  const RELAY_URL = process.env.RELAY_URL || 'ws://localhost:4000/register';
-  const name = process.argv[2] || 'test';
-  const localPort = process.argv[3] || '3000';
+  const RELAY_HTTP = (process.env.RELAY_URL || 'ws://localhost:4000/register')
+    .replace(/^ws/, 'http')
+    .replace(/\/register$/, '');
+  const RELAY_WS = process.env.RELAY_URL || 'ws://localhost:4000/register';
+  const { name, localPort, password } = parseArgs(process.argv.slice(2));
 
-  const ws = new WebSocket(`${RELAY_URL}?name=${name}&token=${session.token}`);
+  const params = new URLSearchParams({ name, token: session.token });
+  if (password) params.set('password', password);
+
+  const ws = new WebSocket(`${RELAY_WS}?${params.toString()}`);
 
   ws.on('open', () => {
-    console.log(`[client] up. Public: http://localhost:4000/tunnel/${name}/`);
+    console.log(`[client] up. Public: ${RELAY_HTTP}/tunnel/${name}/`);
     setInterval(() => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'heartbeat' }));
@@ -46,11 +69,23 @@ async function main() {
   });
 
   ws.on('message', (data) => {
-    const msg: RelayMessage = JSON.parse(data.toString());
-    if (msg.type !== 'request') return;
+    const msg = JSON.parse(data.toString()) as RelayMessage;
+
+    if (msg.type === 'connected') {
+      if (msg.tip) console.log(`[client] ${msg.tip}`);
+      return;
+    }
+
+    if (msg.type !== 'request' || !msg.requestId) return;
 
     const proxyReq = http.request(
-      { hostname: 'localhost', port: localPort, path: msg.path, method: msg.method, headers: msg.headers as any },
+      {
+        hostname: 'localhost',
+        port: localPort,
+        path: msg.path,
+        method: msg.method,
+        headers: msg.headers as http.IncomingHttpHeaders,
+      },
       (proxyRes) => {
         const chunks: Buffer[] = [];
         proxyRes.on('data', (c) => chunks.push(c));
@@ -66,31 +101,46 @@ async function main() {
             console.error('[client] decompress failed:', err);
           }
 
-          ws.send(JSON.stringify({
-            type: 'response',
-            requestId: msg.requestId,
-            status: proxyRes.statusCode,
-            headers: proxyRes.headers,
-            body: buffer.toString('base64'),
-          }));
+          ws.send(
+            JSON.stringify({
+              type: 'response',
+              requestId: msg.requestId,
+              status: proxyRes.statusCode,
+              headers: proxyRes.headers,
+              body: buffer.toString('base64'),
+            })
+          );
         });
       }
     );
 
     proxyReq.on('error', () => {
-      ws.send(JSON.stringify({
-        type: 'response',
-        requestId: msg.requestId,
-        status: 502,
-        body: Buffer.from('Local server unreachable').toString('base64'),
-      }));
+      ws.send(
+        JSON.stringify({
+          type: 'response',
+          requestId: msg.requestId,
+          status: 502,
+          body: Buffer.from('Local server unreachable').toString('base64'),
+        })
+      );
     });
 
     if (msg.body) proxyReq.write(msg.body);
     proxyReq.end();
   });
 
-  ws.on('close', () => console.log('[client] disconnected'));
+  ws.on('close', (code, reason) => {
+    const msg = reason.toString();
+    if (code === 4004 || msg.includes('Free plan allows')) {
+      console.error(`\n${msg || 'Free plan allows 1 active tunnel. Upgrade at helix.dev/dashboard/upgrade to run more.'}`);
+      process.exit(1);
+    }
+    if (code === 4005 || msg.includes('Password-protected')) {
+      console.error(`\n${msg || 'Password-protected tunnels require Helix Pro.'}`);
+      process.exit(1);
+    }
+    console.log('[client] disconnected');
+  });
 }
 
 main();

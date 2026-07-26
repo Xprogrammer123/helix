@@ -4,7 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, Link01Icon } from "@hugeicons/core-free-icons";
-import type { Tunnel } from "@/lib/relay";
+import { usePlan } from "@/components/dashboard/PlanContext";
+import { ProCallout } from "@/components/dashboard/UpgradeModal";
+import { TunnelPassword } from "@/components/dashboard/TunnelPassword";
+import type { Tunnel, TunnelsResponse } from "@/lib/relay";
 import { CopyButton } from "@/components/CopyButton";
 import { RequestTable } from "@/components/RequestTable";
 import { cn } from "@/lib/utils";
@@ -16,7 +19,9 @@ type TunnelDetailProps = {
 
 export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
   const [tunnel, setTunnel] = useState<Tunnel | null>(null);
+  const [tunnelMeta, setTunnelMeta] = useState<Pick<TunnelsResponse, "liveCount" | "tunnelLimit" | "isPro"> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { openUpgrade } = usePlan();
 
   const url = `${publicBase.replace(/\/$/, "")}/tunnel/${name}/`;
 
@@ -31,8 +36,13 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.error ?? "Failed to load tunnel");
       }
-      const tunnels = (await res.json()) as Tunnel[];
-      setTunnel(tunnels.find((t) => t.name === name) ?? null);
+      const data = (await res.json()) as TunnelsResponse;
+      setTunnel(data.tunnels.find((t) => t.name === name) ?? null);
+      setTunnelMeta({
+        liveCount: data.liveCount,
+        tunnelLimit: data.tunnelLimit,
+        isPro: data.isPro,
+      });
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load");
@@ -92,6 +102,11 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
               </code>
               <CopyButton value={url} label="URL copied" />
             </div>
+
+            <TunnelPassword
+              tunnelName={name}
+              passwordProtected={tunnel?.passwordProtected}
+            />
           </div>
 
           <div className="text-right text-sm text-white/35">
@@ -101,12 +116,23 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
             <div>total requests</div>
           </div>
         </div>
+
+        {tunnelMeta && !tunnelMeta.isPro && tunnelMeta.liveCount >= 1 && (
+          <ProCallout
+            className="mt-4"
+            onUpgrade={() => openUpgrade("concurrent-tunnels")}
+          >
+            Running one tunnel on Free. Need a second for webhooks? Pro removes the
+            1-tunnel limit.
+          </ProCallout>
+        )}
       </div>
 
       <div className="px-6 pt-5 pb-2">
         <h2 className="text-sm font-medium text-white/50">Recent requests</h2>
         <p className="mt-0.5 text-xs text-white/30">
-          Polling every 3s · newest first · max 50
+          Polling every 3s · newest first
+          {tunnelMeta?.isPro ? " · up to 500" : " · max 50 on Free"}
         </p>
       </div>
 

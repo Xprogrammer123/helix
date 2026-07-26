@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "framer-motion";
-import type { TunnelRequest } from "@/lib/relay";
+import { usePlan } from "@/components/dashboard/PlanContext";
+import type { RequestsResponse, TunnelRequest } from "@/lib/relay";
 import { cn } from "@/lib/utils";
 
 function statusColor(status: number) {
@@ -131,7 +132,9 @@ function RequestRow({ req }: { req: TunnelRequest }) {
 
 export function RequestTable({ name }: { name: string }) {
   const [requests, setRequests] = useState<TunnelRequest[] | null>(null);
+  const [meta, setMeta] = useState<Pick<RequestsResponse, "capped" | "isPro" | "total" | "limit"> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { openUpgrade } = usePlan();
 
   const load = useCallback(async () => {
     try {
@@ -141,8 +144,14 @@ export function RequestTable({ name }: { name: string }) {
         setError(body?.error ?? "Failed to load requests");
         return;
       }
-      const data = (await res.json()) as TunnelRequest[];
-      setRequests(data);
+      const data = (await res.json()) as RequestsResponse;
+      setRequests(data.requests);
+      setMeta({
+        capped: data.capped,
+        isPro: data.isPro,
+        total: data.total,
+        limit: data.limit,
+      });
       setError(null);
     } catch {
       setError("Failed to load requests");
@@ -198,6 +207,21 @@ export function RequestTable({ name }: { name: string }) {
           req={req}
         />
       ))}
+
+      {meta?.capped && !meta.isPro && (
+        <div className="border-t border-white/[0.06] px-6 py-4">
+          <p className="text-xs text-white/35">
+            Showing the latest {meta.limit} of {meta.total} requests.{" "}
+            <button
+              type="button"
+              onClick={() => openUpgrade("full-history")}
+              className="text-white/55 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/75"
+            >
+              Upgrade for full history
+            </button>
+          </p>
+        </div>
+      )}
     </div>
   );
 }

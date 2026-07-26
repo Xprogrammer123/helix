@@ -12,7 +12,8 @@ import {
   TerminalIcon,
   WebhookIcon,
 } from "@hugeicons/core-free-icons";
-import type { Tunnel } from "@/lib/relay";
+import { usePlan } from "@/components/dashboard/PlanContext";
+import type { Tunnel, TunnelsResponse } from "@/lib/relay";
 import { CopyButton } from "@/components/CopyButton";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,9 @@ type DashboardHomeProps = {
 
 export function DashboardHome({ publicBase }: DashboardHomeProps) {
   const [tunnels, setTunnels] = useState<Tunnel[] | null>(null);
+  const [tunnelMeta, setTunnelMeta] = useState<Pick<TunnelsResponse, "liveCount" | "tunnelLimit" | "isPro"> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { openUpgrade } = usePlan();
 
   const load = useCallback(async () => {
     try {
@@ -37,7 +40,13 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.error ?? "Failed to load");
       }
-      setTunnels((await res.json()) as Tunnel[]);
+      const data = (await res.json()) as TunnelsResponse;
+      setTunnels(data.tunnels);
+      setTunnelMeta({
+        liveCount: data.liveCount,
+        tunnelLimit: data.tunnelLimit,
+        isPro: data.isPro,
+      });
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load");
@@ -123,8 +132,21 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
       <div className="grid gap-3 px-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Tunnels"
-          value={stats?.total ?? "—"}
-          hint="Claimed names"
+          value={
+            tunnelMeta?.tunnelLimit != null
+              ? `${tunnelMeta.liveCount} / ${tunnelMeta.tunnelLimit}`
+              : (stats?.total ?? "—")
+          }
+          hint={
+            tunnelMeta?.tunnelLimit != null
+              ? "Live / plan limit"
+              : "Claimed names"
+          }
+          onClick={
+            tunnelMeta && !tunnelMeta.isPro && tunnelMeta.liveCount >= 1
+              ? () => openUpgrade("concurrent-tunnels")
+              : undefined
+          }
           delay={0}
         />
         <StatCard
@@ -322,20 +344,30 @@ function StatCard({
   hint,
   accent,
   delay,
+  onClick,
 }: {
   label: string;
   value: number | string;
   hint: string;
   accent?: boolean;
   delay: number;
+  onClick?: () => void;
 }) {
+  const Wrapper = onClick ? "button" : "div";
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="rounded-2xl border border-white/[0.06] bg-[#1a1a1a] px-5 py-4"
     >
+      <Wrapper
+        type={onClick ? "button" : undefined}
+        onClick={onClick}
+        className={cn(
+          "w-full rounded-2xl border border-white/[0.06] bg-[#1a1a1a] px-5 py-4 text-left",
+          onClick && "cursor-pointer transition-colors hover:border-white/10"
+        )}
+      >
       <p className="text-xs font-medium uppercase tracking-wide text-white/35">
         {label}
       </p>
@@ -348,6 +380,7 @@ function StatCard({
         {value}
       </p>
       <p className="mt-1 text-xs text-white/30">{hint}</p>
+      </Wrapper>
     </motion.div>
   );
 }

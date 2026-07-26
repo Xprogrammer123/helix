@@ -190,6 +190,47 @@ export function LandingPage() {
         </section>
 
         <section className="border-t border-white/5 py-20">
+          <div className="mb-10 max-w-xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-white">
+              Helix Pro — when a tunnel is part of the job
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/40">
+              Free covers solo dev work. Pro is for client demos, parallel webhook
+              testing, and debugging sessions that outlast the free idle timeout.
+            </p>
+            <p className="mt-4 font-mono text-xl font-semibold text-white">
+              ₦2,500/mo
+            </p>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-accent/20 bg-accent/[0.04] p-6">
+              <h3 className="text-[15px] font-medium text-white">
+                Persistent demo links
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/40">
+                No idle disconnect on Pro — your tunnel stays up through the client
+                call. Password-protect the URL and send credentials separately.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/[0.06] bg-[#161616]/80 p-6">
+              <h3 className="text-[15px] font-medium text-white">
+                Concurrent tunnels
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/40">
+                Stripe webhooks on :3001, your app on :3000, mock API on :4000 — all
+                tunneled at once. Free tier allows one active tunnel.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/upgrade"
+            className="mt-8 inline-flex rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-black transition-opacity hover:opacity-90"
+          >
+            Upgrade to Pro
+          </Link>
+        </section>
+
+        <section className="border-t border-white/5 py-20">
           <h2 className="text-2xl font-semibold tracking-tight text-white">
             How it works
           </h2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Tunnel } from "@/lib/relay";
+import type { Tunnel, TunnelsResponse } from "@/lib/relay";
 import { TunnelRow } from "@/components/TunnelRow";
 import { CopyButton } from "@/components/CopyButton";
 
@@ -26,8 +26,8 @@ export function TunnelList({ publicBase }: TunnelListProps) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.error ?? "Failed to load tunnels");
       }
-      const data = (await res.json()) as Tunnel[];
-      setTunnels(data);
+      const data = (await res.json()) as TunnelsResponse;
+      setTunnels(data.tunnels);
       setError(null);
     } catch (err) {
       // Keep last good snapshot on transient relay/Appwrite blips

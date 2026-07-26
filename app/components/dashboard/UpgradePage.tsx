@@ -1,0 +1,125 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Link01Icon,
+  SparklesIcon,
+  WebhookIcon,
+} from "@hugeicons/core-free-icons";
+import { PRO_PRICE_LABEL } from "@/lib/relay";
+import { cn } from "@/lib/utils";
+
+export function UpgradePage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function startCheckout() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/billing/initialize", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Checkout failed");
+      if (data.authorization_url) window.location.href = data.authorization_url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout failed");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="scrollbar-none flex h-full flex-col overflow-auto">
+      <div className="border-b border-white/5 px-6 py-8">
+        <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+          <HugeiconsIcon icon={SparklesIcon} size={14} color="currentColor" />
+          Helix Pro
+        </div>
+        <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-white">
+          Demo links that survive the meeting. Tunnels that don&apos;t fight each other.
+        </h1>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/45">
+          Pro is built for the moments you actually need a tunnel — client demos,
+          webhook testing, and debugging sessions that run longer than two minutes.
+        </p>
+        <p className="mt-6 font-mono text-2xl font-semibold text-white">
+          {PRO_PRICE_LABEL}
+        </p>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={startCheckout}
+          className={cn(
+            "mt-4 rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-black transition-opacity",
+            loading ? "opacity-60" : "hover:opacity-90"
+          )}
+        >
+          {loading ? "Redirecting to Paystack…" : "Upgrade with Paystack"}
+        </button>
+        {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      </div>
+
+      <div className="grid gap-4 px-6 py-8 lg:grid-cols-2">
+        <UseCaseCard
+          icon={Link01Icon}
+          title="Hand over one URL, keep control"
+          body="Password-protected tunnels plus no idle disconnect. Share a clean demo link in the call, send the password separately — your tunnel stays live through the whole presentation."
+          featured
+        />
+        <UseCaseCard
+          icon={WebhookIcon}
+          title="Three services, three tunnels"
+          body="Run your app, webhook receiver, and mock API at the same time. Free tier allows one active tunnel — Pro removes that ceiling so you don't rebuild your workflow."
+        />
+        <UseCaseCard
+          icon={SparklesIcon}
+          title="Dig deeper than the last 50 requests"
+          body="When something flaky only shows up after request #73, full history (500 per tunnel) is the difference between guessing and knowing."
+          className="lg:col-span-2"
+        />
+      </div>
+
+      <div className="border-t border-white/5 px-6 py-6">
+        <Link
+          href="/dashboard/settings"
+          className="text-sm text-white/40 transition-colors hover:text-white/70"
+        >
+          Already upgraded? View billing status →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function UseCaseCard({
+  icon,
+  title,
+  body,
+  featured,
+  className,
+}: {
+  icon: typeof Link01Icon;
+  title: string;
+  body: string;
+  featured?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border p-6",
+        featured
+          ? "border-accent/20 bg-accent/[0.04]"
+          : "border-white/[0.06] bg-[#1a1a1a]",
+        className
+      )}
+    >
+      <div className="mb-4 flex size-9 items-center justify-center rounded-lg bg-white/10 text-white">
+        <HugeiconsIcon icon={icon} size={18} color="currentColor" />
+      </div>
+      <h2 className="text-[15px] font-medium text-white">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-white/40">{body}</p>
+    </div>
+  );
+}

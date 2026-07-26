@@ -36,6 +36,18 @@ const envVars = [
     name: "APPWRITE_DB_ID",
     desc: "Appwrite database ID (users, tunnels, requests)",
   },
+  {
+    name: "PAYSTACK_SECRET_KEY",
+    desc: "Paystack secret key (relay only — never expose client-side)",
+  },
+  {
+    name: "PAYSTACK_PUBLIC_KEY",
+    desc: "Paystack public key (reference only for dashboard)",
+  },
+  {
+    name: "DASHBOARD_URL",
+    desc: "Next.js app URL for OAuth redirect and billing callbacks",
+  },
 ];
 
 export function DocsPage() {
@@ -178,7 +190,7 @@ export function DocsPage() {
                   </tr>
                   <tr>
                     <td className="px-4 py-3 font-mono text-white">
-                      helix &lt;name&gt; &lt;port&gt;
+                      helix &lt;name&gt; &lt;port&gt; [--password=xxx]
                     </td>
                     <td className="px-4 py-3 text-white/50">
                       Register{" "}
@@ -187,7 +199,10 @@ export function DocsPage() {
                       <code className="font-mono text-white/70">
                         localhost:port
                       </code>
-                      .
+                      . Optional{" "}
+                      <code className="font-mono text-white/70">--password</code>{" "}
+                      enables HTTP Basic Auth on the public URL (
+                      <span className="text-accent">Pro only</span>).
                     </td>
                   </tr>
                 </tbody>
@@ -255,11 +270,12 @@ export function DocsPage() {
             <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-white/45">
               <li>
                 <code className="font-mono text-white/70">users</code> —
-                github_id, username, token, name
+                github_id, username, token, name, plan, plan_expires_at,
+                paystack_customer_code, paystack_subscription_code
               </li>
               <li>
                 <code className="font-mono text-white/70">tunnels</code> — name,
-                user_id
+                user_id, password_hash (optional, Pro)
               </li>
               <li>
                 <code className="font-mono text-white/70">requests</code> —

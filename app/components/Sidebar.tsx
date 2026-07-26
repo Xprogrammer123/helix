@@ -4,31 +4,40 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Home01Icon, WebhookIcon } from "@hugeicons/core-free-icons";
+import {
+  CreditCardIcon,
+  Home01Icon,
+  SparklesIcon,
+  WebhookIcon,
+} from "@hugeicons/core-free-icons";
+import type { UserProfile } from "@/lib/relay";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  {
-    href: "/dashboard",
-    label: "Home",
-    icon: Home01Icon,
-    match: "home" as const,
-  },
+  { href: "/dashboard", label: "Home", icon: Home01Icon, match: "home" as const },
   {
     href: "/dashboard/tunnels",
     label: "Tunnels",
     icon: WebhookIcon,
     match: "tunnels" as const,
   },
+  {
+    href: "/dashboard/settings",
+    label: "Billing",
+    icon: CreditCardIcon,
+    match: "settings" as const,
+  },
 ];
 
-function isActive(pathname: string, match: "home" | "tunnels") {
+function isActive(pathname: string, match: "home" | "tunnels" | "settings") {
   if (match === "home") return pathname === "/dashboard";
+  if (match === "settings") return pathname.startsWith("/dashboard/settings");
   return pathname.startsWith("/dashboard/tunnels");
 }
 
-export function Sidebar() {
+export function Sidebar({ user }: { user: UserProfile | null }) {
   const pathname = usePathname();
+  const isPro = user?.isPro ?? false;
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col pr-3">
@@ -69,6 +78,34 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      <div className="mt-auto space-y-3 px-2 pb-2">
+        {user && (
+          <div className="rounded-xl border border-white/[0.06] bg-[#1a1a1a] px-3 py-2.5">
+            <p className="truncate text-sm font-medium text-white/80">
+              {user.username}
+            </p>
+            <span
+              className={cn(
+                "mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                isPro ? "bg-accent/15 text-accent" : "bg-white/5 text-white/40"
+              )}
+            >
+              {isPro ? "Pro" : "Free"}
+            </span>
+          </div>
+        )}
+
+        {!isPro && (
+          <Link
+            href="/dashboard/upgrade"
+            className="flex items-center justify-center gap-2 rounded-xl bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/15"
+          >
+            <HugeiconsIcon icon={SparklesIcon} size={16} color="currentColor" />
+            Upgrade
+          </Link>
+        )}
+      </div>
     </aside>
   );
 }
