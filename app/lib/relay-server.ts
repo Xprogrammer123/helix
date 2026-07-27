@@ -1,4 +1,4 @@
-import { getSessionToken } from "@/lib/auth";
+import { getSessionToken } from "@/lib/auth-server";
 import { getRelayUrl } from "@/lib/relay";
 
 export async function relayFetch(path: string, init?: RequestInit) {

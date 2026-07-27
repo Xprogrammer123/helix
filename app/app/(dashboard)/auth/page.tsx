@@ -7,6 +7,8 @@ import { StarBackground } from "@/components/StarBackground";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@heroui/react";
+import { getGithubLoginUrl } from "@/lib/auth";
+import { githubCallbackUrl } from "@/lib/urls";
 
 function AuthCard() {
   const searchParams = useSearchParams();
@@ -23,9 +25,7 @@ function AuthCard() {
 
   const handleLogin = () => {
     setLoading(true);
-    // const redirectUri = process.env.NEXT_PUBLIC_WEB_CALLBACK_URL!;
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!;
-    const loginUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent('https://helix-t47s.onrender.com/auth/github/callback')}&scope=read:user&state=web`;
+    const loginUrl = getGithubLoginUrl(githubCallbackUrl());
     window.location.href = loginUrl;
   };
 
@@ -38,7 +38,7 @@ function AuthCard() {
         height={1000}
         className="h-auto mb-8 w-20"
       />
-      <h1 className="font-semibold text-4xl text-center text-white/50">
+      <h1 className="font-semibold text-3xl md:text-4xl text-center text-white/50">
         Share what&apos;s running on <br /> your machine,{" "}
         <span className="text-white">instantly.</span>
       </h1>

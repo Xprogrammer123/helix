@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 import http from 'http';
 import zlib from 'zlib';
 import { login, loadConfig } from './auth.js';
+import { RELAY_HTTP, RELAY_WS, DASHBOARD_UPGRADE_URL } from './config.js';
 
 type RelayMessage = {
   type: 'request' | 'response' | 'connected';
@@ -48,10 +49,6 @@ async function main() {
   }
   console.log(`[client] using saved session for ${session.username}`);
 
-  const RELAY_HTTP = (process.env.RELAY_URL || 'ws://helix-t47s.onrender.com')
-    .replace(/^ws/, 'http')
-    .replace(/\/register$/, '');
-  const RELAY_WS = process.env.RELAY_URL || 'ws://helix-t47s.onrender.com';
   const { name, localPort, password } = parseArgs(process.argv.slice(2));
 
   const params = new URLSearchParams({ name, token: session.token });
@@ -80,7 +77,7 @@ async function main() {
 
     const proxyReq = http.request(
       {
-        hostname: 'localhost',
+        hostname: '127.0.0.1',
         port: localPort,
         path: msg.path,
         method: msg.method,
@@ -132,7 +129,7 @@ async function main() {
   ws.on('close', (code, reason) => {
     const msg = reason.toString();
     if (code === 4004 || msg.includes('Free plan allows')) {
-      console.error(`\n${msg || 'Free plan allows 1 active tunnel. Upgrade at helix01.vercel.app/dashboard/upgrade to run more.'}`);
+      console.error(`\n${msg || `Free plan allows 1 active tunnel. Upgrade at ${DASHBOARD_UPGRADE_URL} to run more.`}`);
       process.exit(1);
     }
     if (code === 4005 || msg.includes('Password-protected')) {

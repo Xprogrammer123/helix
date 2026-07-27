@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { PlanProvider } from "@/components/dashboard/PlanContext";
-import { getSessionToken } from "@/lib/auth";
+import { getSessionToken } from "@/lib/auth-server";
 import { relayFetch, type UserProfile } from "@/lib/relay-server";
 
 export default async function DashboardLayout({

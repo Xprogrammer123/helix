@@ -1,18 +1,21 @@
 {
-  "name": "client",
+  "name": "helix01",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx src/index.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "Localhost tunneling tool — ngrok alternative",
   "type": "module",
-  "dependencies": {
-    "ws": "^8.21.1"
+  "bin": {
+    "helix": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": ["dist"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thatcreativetayo/helix"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

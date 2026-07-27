@@ -3,12 +3,12 @@ import { exec } from "child_process";
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { GITHUB_CALLBACK_URL, CLI_CALLBACK_PORT } from './config.js';
 
 const CONFIG_DIR = path.join(os.homedir(), '.helix');
 const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
 
-const CLIENT_ID = "Ov23liEonC5diAqFoF71";
-const CALLBACK_PORT = 51234;
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID || "Ov23liEonC5diAqFoF71";
 
 function saveConfig(data: { token: string; username: string }) {
   if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
@@ -23,7 +23,7 @@ export function loadConfig(): { token: string; username: string } | null {
 export function login(): Promise<{ token: string; username: string }> {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
-      const url = new URL(req.url ?? "", `http://localhost:${CALLBACK_PORT}`);
+      const url = new URL(req.url ?? "", `http://127.0.0.1:${CLI_CALLBACK_PORT}`);
       const token = url.searchParams.get("token");
       const username = url.searchParams.get("username");
       if (!token) return;
@@ -36,8 +36,8 @@ export function login(): Promise<{ token: string; username: string }> {
       resolve(data);
     });
 
-    server.listen(CALLBACK_PORT, () => {
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://helix-t47s.onrender.com/auth/github/callback&scope=read:user&state=cli`;
+    server.listen(CLI_CALLBACK_PORT, () => {
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_CALLBACK_URL)}&scope=read:user&state=cli`;
       const opener =
         process.platform === "win32"
           ? 'start ""'

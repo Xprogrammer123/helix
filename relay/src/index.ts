@@ -30,8 +30,15 @@ type TunnelMeta = {
   idleTtlMs: number;
 };
 
-const PRO_PRICE_KOBO = 250_000;
-const UPGRADE_URL = `${(process.env.DASHBOARD_URL || 'https://helix01.vercel.app').replace(/\/$/, '')}/dashboard/upgrade`;
+import {
+  RELAY_URL,
+  DASHBOARD_URL,
+  GITHUB_CALLBACK_URL,
+  UPGRADE_URL,
+  CLI_CALLBACK_PORT,
+  upgradeHint,
+  freeTierTip,
+} from './config.js';
 
 function rewriteHtml(body: string, name: string): string {
   const prefix = `/tunnel/${name}`;
@@ -115,7 +122,14 @@ async function activatePro(userId: string, customerCode?: string, subscriptionCo
   await db.updateDocument(DB_ID, 'users', userId, updates);
 }
 
+const PRO_PRICE_KOBO = 250_000;
+
 const app = express();
+app.set('trust proxy', 1);
+
+app.get('/health', (_req, res) => {
+  res.json({ ok: true });
+});
 
 app.post('/webhooks/paystack', express.raw({ type: 'application/json' }), async (req, res) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
@@ -168,7 +182,7 @@ const lastSeen = new Map<string, number>();
 const tunnelMeta = new Map<string, TunnelMeta>();
 
 wss.on('connection', async (ws, req) => {
-  const url = new URL(req.url ?? '', 'https://helix-t47s.onrender.com');
+  const url = new URL(req.url ?? '', RELAY_URL);
   const name = url.searchParams.get('name');
   const token = url.searchParams.get('token');
   const password = url.searchParams.get('password');
@@ -191,7 +205,7 @@ wss.on('connection', async (ws, req) => {
     if (activeOthers >= 1) {
       ws.close(
         4004,
-        'Free plan allows 1 active tunnel. Upgrade at helix01.vercel.app/dashboard/upgrade to run more.'
+        'Free plan allows 1 active tunnel. ' + upgradeHint()
       );
       return;
     }
@@ -243,9 +257,7 @@ wss.on('connection', async (ws, req) => {
     JSON.stringify({
       type: 'connected',
       plan: userIsPro ? 'pro' : 'free',
-      tip: userIsPro
-        ? null
-        : 'Tip: helix.dev/dashboard/upgrade for more tunnels & full history',
+      tip: userIsPro ? null : freeTierTip(),
     })
   );
 
@@ -395,7 +407,7 @@ app.get('/auth/github/callback', async (req, res) => {
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
       code,
-      redirect_uri: process.env.GITHUB_CALLBACK_URL || 'https://helix-t47s.onrender.com/auth/github/callback',
+      redirect_uri: GITHUB_CALLBACK_URL,
     }),
   });
   const tokenData = await tokenRes.json();
@@ -427,17 +439,11 @@ app.get('/auth/github/callback', async (req, res) => {
 
   if (state === 'cli') {
     return res.redirect(
-      `http://localhost:51234/callback?token=${userDoc.token}&username=${userDoc.username}`
+      `http://127.0.0.1:${CLI_CALLBACK_PORT}/callback?token=${userDoc.token}&username=${userDoc.username}`
     );
   }
 
-  res.cookie('helix_token', userDoc.token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-  });
-  const dashboardUrl = process.env.DASHBOARD_URL || 'https://helix01.vercel.app';
-  return res.redirect(`${dashboardUrl}/dashboard`);
+  return res.redirect(`${DASHBOARD_URL}/auth/callback?token=${userDoc.token}`);
 });
 
 app.get('/api/me', async (req, res) => {
@@ -586,7 +592,7 @@ app.post('/api/billing/initialize', async (req, res) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) return res.status(503).json({ error: 'Billing not configured' });
 
-  const dashboardUrl = process.env.DASHBOARD_URL || 'https://helix01.vercel.app';
+  const dashboardUrl = DASHBOARD_URL;
   const email = `${user.username}@users.helix.dev`;
 
   const initRes = await fetch('https://api.paystack.co/transaction/initialize', {
@@ -652,7 +658,7 @@ const wsProxyServer = new WSServer({ noServer: true });
 const browserSockets = new Map<string, WebSocket>();
 
 server.on('upgrade', async (req, socket, head) => {
-  const url = new URL(req.url ?? '', 'https://helix-t47s.onrender.com');
+  const url = new URL(req.url ?? '', RELAY_URL);
   if (url.pathname === '/register') return;
 
   const match = url.pathname.match(/^\/tunnel\/([^/]+)(\/.*)?$/);

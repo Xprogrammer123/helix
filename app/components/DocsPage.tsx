@@ -13,12 +13,20 @@ const sections = [
 
 const envVars = [
   {
-    name: "GITHUB_CLIENT_ID",
-    desc: "GitHub OAuth App client ID (shared by web + CLI)",
+    name: "RELAY_URL",
+    desc: "Relay API URL (server-side proxy)",
   },
   {
-    name: "GITHUB_CLIENT_SECRET",
-    desc: "GitHub OAuth App client secret",
+    name: "NEXT_PUBLIC_RELAY_URL",
+    desc: "Public relay URL shown in dashboard tunnel links",
+  },
+  {
+    name: "NEXT_PUBLIC_APP_URL",
+    desc: "Dashboard URL (OAuth return + billing callbacks)",
+  },
+  {
+    name: "NEXT_PUBLIC_GITHUB_CLIENT_ID",
+    desc: "GitHub OAuth App client ID (web login button)",
   },
   {
     name: "APPWRITE_ENDPOINT",
@@ -116,7 +124,7 @@ export function DocsPage() {
           </nav>
         </aside>
 
-        <article className="min-w-0 ml-64 flex-1 space-y-16 pb-24">
+        <article className="min-w-0 md:ml-64 flex-1 space-y-16 pb-24">
           <section id="getting-started" className="scroll-mt-28">
             <h1 className="text-3xl font-semibold tracking-tight">
               Getting Started
@@ -215,7 +223,7 @@ export function DocsPage() {
               <code className="font-mono text-white/60">RELAY_URL</code> —
               WebSocket register URL (default{" "}
               <code className="font-mono text-white/60">
-                ws://localhost:4000/register
+                wss://helix-t47s.onrender.com/register
               </code>
               ).
             </p>
