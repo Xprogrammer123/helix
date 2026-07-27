@@ -1,13 +1,15 @@
 {
   "name": "helix01",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Localhost tunneling tool — ngrok alternative",
   "type": "module",
   "bin": {
     "helix": "./dist/index.js"
   },
   "main": "./dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,6 +18,9 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

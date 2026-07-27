@@ -47,10 +47,10 @@ export function Sidebar({ user }: { user: UserProfile | null }) {
           alt="Helix"
           width={120}
           height={40}
-          className="h-8 w-auto"
+          className="h-6 w-auto"
           priority
         />
-        <span className="text-[15px] font-semibold text-white">Helix</span>
+        {/* <span className="text-[15px] font-semibold text-white">Helix</span> */}
       </div>
 
       <nav className="mt-8 flex flex-col gap-1">
