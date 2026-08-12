@@ -140,34 +140,34 @@ export function LandingPage() {
 
       <main className="relative z-10">
         {/* Hero — brand first, one headline, one line, CTA, full-bleed terminal */}
-        <section className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-6xl flex-col px-6 pt-10 pb-16 sm:pt-16">
+        <section className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-6xl flex-col justify-center gap-8 px-6 py-12 sm:gap-16 sm:py-20 lg:gap-20">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mx-auto max-w-3xl text-center"
+            className="mx-auto w-full max-w-4xl text-center"
           >
             <Image
               src="/logo.png"
               alt="Helix"
-              width={220}
-              height={72}
-              className="mx-auto h-14 w-auto sm:h-16"
+              width={320}
+              height={104}
+              className="mx-auto h-12 w-auto sm:h-24"
               priority
             />
-            <h1 className="mt-8 text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+            <h1 className="mt-6 text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:mt-12 sm:text-6xl sm:leading-[1.05] lg:text-7xl">
               Your machine,{" "}
               <span className="text-white/45">on a path.</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-white/40">
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/45 sm:mt-6 sm:text-xl">
               Self-hosted localhost tunnels. Point the CLI at a port, get a
               public path on your relay — no SaaS middleman.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-[#1a1a1a]/90 py-1.5 pr-1.5 pl-4 backdrop-blur">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3 sm:mt-12 sm:gap-4">
+              <div className="relative flex items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-[#1a1a1a]/90 py-1.5 pr-1.5 pl-4 backdrop-blur sm:gap-2.5 sm:py-2.5 sm:pr-2 sm:pl-5">
                 <BorderBeam
-                  size={60}
+                  size={80}
                   duration={8}
                   borderWidth={1}
                   colorFrom="#22c55e"
@@ -179,12 +179,14 @@ export function LandingPage() {
                   color="currentColor"
                   className="text-white/40"
                 />
-                <code className="font-mono text-sm text-white">{INSTALL}</code>
+                <code className="font-mono text-sm text-white sm:text-lg">
+                  {INSTALL}
+                </code>
                 <CopyButton value={INSTALL} label="Install command copied" />
               </div>
               <Link
                 href="/docs"
-                className="rounded-full px-4 py-2 text-sm text-white/50 transition-colors hover:text-white"
+                className="rounded-full px-4 py-2 text-sm text-white/50 transition-colors hover:text-white sm:px-5 sm:py-2.5 sm:text-base"
               >
                 Read the docs →
               </Link>
@@ -195,19 +197,19 @@ export function LandingPage() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.12 }}
-            className="relative mt-14 flex flex-1 items-end justify-center"
+            className="relative flex w-full justify-center"
           >
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(ellipse_at_bottom,rgba(34,197,94,0.15),transparent_70%)]" />
-            <div className="relative w-full max-w-3xl">
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)]">
+            <div className="pointer-events-none absolute inset-x-0 -bottom-8 h-40 bg-[radial-gradient(ellipse_at_bottom,rgba(34,197,94,0.2),transparent_70%)] sm:h-56" />
+            <div className="relative w-full max-w-5xl">
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-[0_50px_100px_-40px_rgba(0,0,0,0.9)] sm:rounded-3xl">
                 <BorderBeam
-                  size={120}
+                  size={160}
                   duration={10}
                   borderWidth={1}
                   colorFrom="#22c55e"
                   colorTo="transparent"
                 />
-                <Terminal className="max-h-none max-w-none rounded-2xl border-0 bg-transparent">
+                <Terminal className="max-h-none max-w-none rounded-2xl border-0 bg-transparent sm:rounded-3xl [&_code]:gap-y-1.5 sm:[&_code]:gap-y-2 [&_pre]:p-4 sm:[&_pre]:p-8 [&_span]:text-sm sm:[&_span]:text-lg [&_div.grid]:text-sm sm:[&_div.grid]:text-lg">
                   <TypingAnimation className="text-white/80">
                     {"> helix login"}
                   </TypingAnimation>
