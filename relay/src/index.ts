@@ -326,7 +326,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 app.use('/tunnel/:name', async (req: Request, res: Response) => {
-  const { name } = req.params;
+  const name = String(req.params.name);
   const ws = tunnels.get(name);
   if (!ws) return res.status(404).send('Tunnel not found');
 

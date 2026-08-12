@@ -105,6 +105,17 @@ export function Sidebar({ user }: { user: UserProfile | null }) {
             Upgrade
           </Link>
         )}
+
+        <button
+          type="button"
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/auth";
+          }}
+          className="w-full rounded-xl px-3 py-2 text-sm text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
+        >
+          Sign out
+        </button>
       </div>
     </aside>
   );

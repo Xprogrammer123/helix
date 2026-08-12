@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -8,5 +8,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true
-  }
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }

@@ -26,7 +26,9 @@ export async function findOrCreateUserFromRadon(radonUser: RadonUser): Promise<U
     const byEmail = await db.listDocuments(DB_ID, 'users', [Query.equal('email', email)]);
     if (byEmail.total > 0) {
       const user = byEmail.documents[0] as UserDoc;
-      await db.updateDocument(DB_ID, 'users', user.$id, { radon_user_id: radonUser.id });
+      await db.updateDocument(DB_ID, 'users', user.$id, {
+        radon_user_id: radonUser.id,
+      } as Record<string, unknown>);
       return { ...user, radon_user_id: radonUser.id };
     }
   }
@@ -44,7 +46,7 @@ export async function findOrCreateUserFromRadon(radonUser: RadonUser): Promise<U
     token: crypto.randomUUID(),
     name: email?.split('@')[0] || username,
     plan: 'free',
-  })) as UserDoc;
+  } as Record<string, unknown>)) as UserDoc;
 }
 
 /** @deprecated Legacy Appwrite API token */
