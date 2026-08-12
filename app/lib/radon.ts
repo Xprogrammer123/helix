@@ -43,6 +43,7 @@ export function getAuth(): Radon {
       adapter: postgresAdapter(getPool()),
       session: { secret },
       appName: "Helix",
+      rateLimit: { maxPerWindow: 10, windowMs: 600_000 },
       providers: {
         emailCode: { sender },
         ...(googleClientId && googleClientSecret

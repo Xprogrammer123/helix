@@ -37,7 +37,11 @@ function AuthCard() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        toast(data.message || "Could not send code. Try again.");
+        if (data.error === "rate_limit_exceeded") {
+          toast("Too many codes sent. Wait a few minutes and try again.");
+        } else {
+          toast(data.message || "Could not send code. Try again.");
+        }
         return;
       }
       setSent(true);
