@@ -1,4 +1,4 @@
-import { auth } from "../lib/radon";
+import { getAuth } from "../lib/radon";
 
-await auth.init();
+await getAuth().init();
 console.log("Radon tables ready");

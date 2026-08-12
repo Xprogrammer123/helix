@@ -4,30 +4,59 @@ import { resendSender } from "@radonsdk/auth/senders/resend";
 import { Pool } from "pg";
 import { APP_URL } from "./urls";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+let pool: Pool | null = null;
+let authInstance: Radon | null = null;
 
-const sender = resendSender({
-  apiKey: process.env.RESEND_API_KEY!,
-  from: process.env.RADON_EMAIL_FROM || "Helix <auth@helix.dev>",
-});
+function getPool() {
+  if (!pool) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is required for Radon auth");
+    }
+    pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  }
+  return pool;
+}
 
-const googleClientId = process.env.RADON_GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.RADON_GOOGLE_CLIENT_SECRET;
+export function getAuth(): Radon {
+  if (!authInstance) {
+    const secret = process.env.RADON_SECRET;
+    if (!secret) {
+      throw new Error(
+        "RADON_SECRET is required. Set it from an environment variable."
+      );
+    }
 
-export const auth = new Radon({
-  adapter: postgresAdapter(pool),
-  session: { secret: process.env.RADON_SECRET! },
-  appName: "Helix",
-  providers: {
-    emailCode: { sender },
-    ...(googleClientId && googleClientSecret
-      ? {
-          google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-            redirectUri: `${APP_URL.replace(/\/$/, "")}/api/auth/google/callback`,
-          },
-        }
-      : {}),
-  },
-});
+    const resendKey = process.env.RESEND_API_KEY;
+    if (!resendKey) {
+      throw new Error("RESEND_API_KEY is required for email sign-in");
+    }
+
+    const sender = resendSender({
+      apiKey: resendKey,
+      from: process.env.RADON_EMAIL_FROM || "Helix <auth@helix.dev>",
+    });
+
+    const googleClientId = process.env.RADON_GOOGLE_CLIENT_ID;
+    const googleClientSecret = process.env.RADON_GOOGLE_CLIENT_SECRET;
+
+    authInstance = new Radon({
+      adapter: postgresAdapter(getPool()),
+      session: { secret },
+      appName: "Helix",
+      providers: {
+        emailCode: { sender },
+        ...(googleClientId && googleClientSecret
+          ? {
+              google: {
+                clientId: googleClientId,
+                clientSecret: googleClientSecret,
+                redirectUri: `${APP_URL.replace(/\/$/, "")}/api/auth/google/callback`,
+              },
+            }
+          : {}),
+      },
+    });
+  }
+
+  return authInstance;
+}
