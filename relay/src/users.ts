@@ -67,7 +67,13 @@ export async function resolveUserFromAuth(token: string): Promise<UserDoc | null
       user = await findOrCreateUserFromRadon(radonUser);
     }
     return user;
-  } catch {
+  } catch (err) {
+    // Only fall back to legacy Appwrite API tokens when JWT verify fails.
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes('Appwrite') || msg.includes('Collection')) {
+      console.error('[relay] Appwrite user sync failed:', err);
+      throw err;
+    }
     return findUserByLegacyToken(token);
   }
 }
