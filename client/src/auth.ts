@@ -38,7 +38,16 @@ export async function login(): Promise<{ token: string; username: string }> {
   });
 
   if (!sendRes.ok) {
-    throw new Error("Failed to send verification code");
+    const body = await sendRes.text().catch(() => "");
+    const hint =
+      sendRes.status === 404
+        ? ` Relay at ${RELAY_HTTP} may not be running the latest Helix code.`
+        : "";
+    throw new Error(
+      `Failed to send verification code (HTTP ${sendRes.status}).${hint}${
+        body ? ` ${body.slice(0, 120)}` : ""
+      }`
+    );
   }
 
   console.log("Check your inbox for a 6-digit code.");

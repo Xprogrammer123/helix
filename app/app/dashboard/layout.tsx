@@ -19,7 +19,7 @@ export default async function DashboardLayout({
     <PlanProvider initialUser={initialUser}>
       <div className="flex h-screen w-screen bg-dark p-3 text-white">
         <Sidebar user={initialUser} />
-        <main className="scrollbar-none flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl bg-[#212121]">
+        <main className="scrollbar-none flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.04] bg-[#1e1e1e]">
           {children}
         </main>
       </div>

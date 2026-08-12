@@ -170,12 +170,12 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
         />
       </div>
 
-      <div className="mt-4 grid flex-1 gap-4 px-6 pb-6 lg:grid-cols-5">
+      <div className="mt-5 grid flex-1 gap-4 px-6 pb-6 lg:grid-cols-5">
         <motion.section
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[#1a1a1a] lg:col-span-3"
+          className="flex flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#191919] lg:col-span-3"
         >
           <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
             <div className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[#1a1a1a]"
+            className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#191919]"
           >
             <div className="flex items-center gap-2 border-b border-white/[0.06] px-5 py-4">
               <HugeiconsIcon
@@ -297,7 +297,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="rounded-2xl border border-white/[0.06] bg-[#1a1a1a] p-5"
+            className="rounded-2xl border border-white/[0.07] bg-[#191919] p-5"
           >
             <h2 className="text-sm font-medium text-white">Quick start</h2>
             <p className="mt-1 text-xs text-white/35">
@@ -364,16 +364,17 @@ function StatCard({
         type={onClick ? "button" : undefined}
         onClick={onClick}
         className={cn(
-          "w-full rounded-2xl border border-white/[0.06] bg-[#1a1a1a] px-5 py-4 text-left",
-          onClick && "cursor-pointer transition-colors hover:border-white/10"
+          "w-full rounded-2xl border border-white/[0.07] bg-[#191919] px-5 py-4 text-left",
+          accent && "border-accent/20 bg-accent/[0.04]",
+          onClick && "cursor-pointer transition-colors hover:border-white/12"
         )}
       >
-      <p className="text-xs font-medium uppercase tracking-wide text-white/35">
+      <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/35">
         {label}
       </p>
       <p
         className={cn(
-          "mt-2 font-mono text-3xl font-semibold tabular-nums tracking-tight",
+          "mt-2.5 font-mono text-3xl font-semibold tabular-nums tracking-tight",
           accent ? "text-accent" : "text-white"
         )}
       >
