@@ -22,11 +22,23 @@ const envVars = [
   },
   {
     name: "NEXT_PUBLIC_APP_URL",
-    desc: "Dashboard URL (OAuth return + billing callbacks)",
+    desc: "Dashboard URL (billing callbacks)",
   },
   {
-    name: "NEXT_PUBLIC_GITHUB_CLIENT_ID",
-    desc: "GitHub OAuth App client ID (web login button)",
+    name: "RADON_SECRET",
+    desc: "JWT signing secret for Radon auth (relay + dashboard)",
+  },
+  {
+    name: "DATABASE_URL",
+    desc: "Postgres connection string for Radon user/session tables",
+  },
+  {
+    name: "RESEND_API_KEY",
+    desc: "Resend API key for email verification codes",
+  },
+  {
+    name: "RADON_EMAIL_FROM",
+    desc: "From address for auth emails, e.g. Helix <auth@yourdomain.com>",
   },
   {
     name: "APPWRITE_ENDPOINT",
@@ -148,11 +160,9 @@ export function DocsPage() {
               helix login
             </pre>
             <p className="mt-3 text-sm text-white/40">
-              Opens GitHub OAuth. The CLI uses{" "}
-              <code className="font-mono text-white/60">state=cli</code>; the
-              dashboard uses{" "}
-              <code className="font-mono text-white/60">state=web</code>. Same
-              OAuth app, different callback handling.
+              Enter your email in the terminal, then type the 6-digit code sent
+              to your inbox. Your session JWT is saved locally at{" "}
+              <code className="font-mono text-white/60">~/.helix/config.json</code>.
             </p>
 
             <h2 className="mt-8 text-lg font-medium">3. Start a tunnel</h2>
@@ -192,8 +202,8 @@ export function DocsPage() {
                       helix login
                     </td>
                     <td className="px-4 py-3 text-white/50">
-                      Authenticate via GitHub OAuth and store a session token
-                      locally.
+                      Authenticate with an email verification code and store a
+                      session token locally.
                     </td>
                   </tr>
                   <tr>
@@ -262,24 +272,33 @@ export function DocsPage() {
               </table>
             </div>
 
-            <h2 className="mt-8 text-lg font-medium">OAuth callback</h2>
+            <h2 className="mt-8 text-lg font-medium">Auth (Radon)</h2>
             <p className="mt-2 text-sm text-white/40">
-              Register the GitHub OAuth App callback as{" "}
-              <code className="font-mono text-white/60">
-                &#123;RELAY&#125;/auth/github/callback
-              </code>
-              . Web logins set an httpOnly{" "}
-              <code className="font-mono text-white/60">helix_token</code> cookie
-              and redirect to{" "}
-              <code className="font-mono text-white/60">/dashboard</code>.
+              Helix uses{" "}
+              <a
+                href="https://radonsdk.xyz/docs"
+                className="text-white underline underline-offset-2"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Radon
+              </a>{" "}
+              for passwordless email sign-in. The dashboard mounts Radon at{" "}
+              <code className="font-mono text-white/60">/api/auth/*</code> and
+              stores a{" "}
+              <code className="font-mono text-white/60">radon_session</code>{" "}
+              cookie. Run{" "}
+              <code className="font-mono text-white/60">pnpm init-db</code> once
+              in relay and app to create Radon tables in Postgres.
             </p>
 
             <h2 className="mt-8 text-lg font-medium">Appwrite collections</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-white/45">
               <li>
                 <code className="font-mono text-white/70">users</code> —
-                github_id, username, token, name, plan, plan_expires_at,
-                paystack_customer_code, paystack_subscription_code
+                radon_user_id, email, username, token (legacy), name, plan,
+                plan_expires_at, paystack_customer_code,
+                paystack_subscription_code
               </li>
               <li>
                 <code className="font-mono text-white/70">tunnels</code> — name,

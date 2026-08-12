@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "kroma": {
+      "command": "npx",
+      "args": ["-y", "@kromamcp/server"],
+      "envFile": ".cursor/.env"
+    }
+  }
+}

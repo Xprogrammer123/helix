@@ -23,3 +23,5 @@ Thumbs.db
 
 # misc
 *.tsbuildinfo
+# local MCP secrets
+.cursor/.env

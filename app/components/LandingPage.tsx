@@ -34,8 +34,8 @@ const features = [
   },
   {
     icon: LockIcon,
-    title: "GitHub OAuth",
-    body: "One OAuth app for web and CLI. Namespaces are claimed per account.",
+    title: "Email sign-in",
+    body: "Passwordless email codes via Radon — no separate account system to maintain.",
   },
   {
     icon: ServerStack01Icon,
@@ -45,7 +45,7 @@ const features = [
 ];
 
 const steps = [
-  { n: "01", title: "Login", body: "helix login — GitHub OAuth in the browser" },
+  { n: "01", title: "Login", body: "helix login — enter your email, verify the code" },
   { n: "02", title: "Expose", body: "helix myapp 3000 — claim a name, open a port" },
   { n: "03", title: "Share", body: "Hit /tunnel/myapp/ on your relay host" },
 ];
@@ -139,7 +139,7 @@ export function LandingPage() {
                 {"> helix login"}
               </TypingAnimation>
               <AnimatedSpan className="text-white">
-                ✔ Logged in via GitHub
+                ✔ Logged in via email
               </AnimatedSpan>
               <TypingAnimation className="text-white/80">
                 {"> helix myapp 3000"}
@@ -267,7 +267,7 @@ export function LandingPage() {
                   Ready to expose a port?
                 </h2>
                 <p className="mt-2 max-w-md text-sm text-white/40">
-                  Install the CLI, log in with GitHub, and share a path — not a
+                  Install the CLI, log in with your email, and share a path — not a
                   subdomain.
                 </p>
               </div>

@@ -3,7 +3,6 @@ export {
   getPublicRelayUrl,
   RELAY_URL,
   APP_URL,
-  githubCallbackUrl,
 } from "./urls";
 export type {
   UserProfile,

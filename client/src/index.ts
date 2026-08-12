@@ -37,8 +37,13 @@ function parseArgs(argv: string[]) {
 
 async function main() {
   if (process.argv[2] === 'login') {
-    const { username } = await login();
-    console.log(`Logged in as ${username}`);
+    try {
+      const { username } = await login();
+      console.log(`Logged in as ${username}`);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : 'Login failed');
+      process.exit(1);
+    }
     process.exit(0);
   }
 

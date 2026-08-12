@@ -30,12 +30,12 @@ type TunnelMeta = {
   idleTtlMs: number;
 };
 
+import { auth } from './auth.js';
+import { resolveUserFromAuth, findOrCreateUserFromRadon } from './users.js';
 import {
   RELAY_URL,
   DASHBOARD_URL,
-  GITHUB_CALLBACK_URL,
   UPGRADE_URL,
-  CLI_CALLBACK_PORT,
   upgradeHint,
   freeTierTip,
 } from './config.js';
@@ -53,12 +53,6 @@ function rewriteHtml(body: string, name: string): string {
     : swScript + rewritten;
 
   return rewritten;
-}
-
-async function findUserByToken(token: string): Promise<UserDoc | null> {
-  const match = await db.listDocuments(DB_ID, 'users', [Query.equal('token', token)]);
-  if (match.total === 0) return null;
-  return match.documents[0] as UserDoc;
 }
 
 function countActiveTunnelsForUser(userId: string, excludeName?: string): number {
@@ -192,7 +186,7 @@ wss.on('connection', async (ws, req) => {
     return;
   }
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) {
     ws.close(4002, 'Invalid token');
     return;
@@ -396,61 +390,44 @@ app.use('/tunnel/:name', async (req: Request, res: Response) => {
   });
 });
 
-app.get('/auth/github/callback', async (req, res) => {
-  const code = req.query.code as string;
-  const state = req.query.state as string;
-
-  const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code,
-      redirect_uri: GITHUB_CALLBACK_URL,
-    }),
-  });
-  const tokenData = await tokenRes.json();
-  if (!tokenData.access_token) {
-    return res.status(400).send('GitHub token exchange failed');
+app.post('/api/auth/cli/send-code', async (req, res) => {
+  const email = req.body?.email;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'email required' });
   }
 
-  const userRes = await fetch('https://api.github.com/user', {
-    headers: { Authorization: `Bearer ${tokenData.access_token}` },
-  });
-  const ghUser = await userRes.json();
+  try {
+    await auth.emailCode.sendCode({ email });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[relay] cli send-code error:', err);
+    res.status(500).json({ error: 'Failed to send code' });
+  }
+});
 
-  const existing = await db.listDocuments(DB_ID, 'users', [
-    Query.equal('github_id', String(ghUser.id)),
-  ]);
-
-  let userDoc;
-  if (existing.total > 0) {
-    userDoc = existing.documents[0];
-  } else {
-    userDoc = await db.createDocument(DB_ID, 'users', ID.unique(), {
-      github_id: String(ghUser.id),
-      username: ghUser.login,
-      token: crypto.randomUUID(),
-      name: ghUser.name || ghUser.login,
-      plan: 'free',
-    });
+app.post('/api/auth/cli/verify', async (req, res) => {
+  const email = req.body?.email;
+  const code = req.body?.code;
+  if (!email || !code) {
+    return res.status(400).json({ error: 'email and code required' });
   }
 
-  if (state === 'cli') {
-    return res.redirect(
-      `http://127.0.0.1:${CLI_CALLBACK_PORT}/callback?token=${userDoc.token}&username=${userDoc.username}`
-    );
+  try {
+    const { user: radonUser } = await auth.emailCode.verify({ email, code });
+    const appwriteUser = await findOrCreateUserFromRadon(radonUser);
+    const { token } = auth.createSessionToken(radonUser.id);
+    res.json({ token, username: appwriteUser.username });
+  } catch (err) {
+    console.error('[relay] cli verify error:', err);
+    res.status(401).json({ error: 'Invalid or expired code' });
   }
-
-  return res.redirect(`${DASHBOARD_URL}/auth/callback?token=${userDoc.token}`);
 });
 
 app.get('/api/me', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
   res.json(userPublicProfile(user));
@@ -461,7 +438,7 @@ app.get('/api/requests/:name', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
   const tunnelMatch = await db.listDocuments(DB_ID, 'tunnels', [
@@ -502,7 +479,7 @@ app.get('/api/tunnels', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
   const tunnelDocs = await db.listDocuments(DB_ID, 'tunnels', [
@@ -541,7 +518,7 @@ app.patch('/api/tunnels/:name/password', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
   if (!isPro(user)) {
     return res.status(403).json({ error: 'Password-protected tunnels require Helix Pro.' });
@@ -586,14 +563,14 @@ app.post('/api/billing/initialize', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) return res.status(503).json({ error: 'Billing not configured' });
 
   const dashboardUrl = DASHBOARD_URL;
-  const email = `${user.username}@users.helix.dev`;
+  const email = user.email || `${user.username}@users.helix.dev`;
 
   const initRes = await fetch('https://api.paystack.co/transaction/initialize', {
     method: 'POST',
@@ -627,7 +604,7 @@ app.get('/api/billing/verify', async (req, res) => {
   if (!token) return res.status(401).json({ error: 'Missing token' });
   if (!reference) return res.status(400).json({ error: 'Missing reference' });
 
-  const user = await findUserByToken(token);
+  const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
   const secret = process.env.PAYSTACK_SECRET_KEY;
@@ -717,4 +694,12 @@ server.on('upgrade', async (req, socket, head) => {
   });
 });
 
-server.listen(PORT, () => console.log(`[relay] listening on ${PORT}`));
+server.listen(PORT, async () => {
+  try {
+    await auth.init();
+    console.log('[relay] Radon auth ready');
+  } catch (err) {
+    console.error('[relay] Radon init failed:', err);
+  }
+  console.log(`[relay] listening on ${PORT}`);
+});

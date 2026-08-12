@@ -11,7 +11,3 @@ export function getRelayUrl() {
 export function getPublicRelayUrl() {
   return process.env.NEXT_PUBLIC_RELAY_URL ?? getRelayUrl();
 }
-
-export function githubCallbackUrl() {
-  return `${RELAY_URL.replace(/\/$/, "")}/auth/github/callback`;
-}

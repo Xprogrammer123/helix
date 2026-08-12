@@ -6,6 +6,8 @@ export type UserDoc = {
   paystack_customer_code?: string;
   paystack_subscription_code?: string;
   token?: string;
+  radon_user_id?: string;
+  email?: string;
   github_id?: string;
   name?: string;
 };

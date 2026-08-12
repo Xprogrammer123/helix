@@ -12,12 +12,12 @@ helix myapp 3000
 
 ## Why
 
-Free tiers on existing tunnel tools expire your URL every couple hours, forcing you to re-paste links mid-demo or mid-webhook-test. Helix keeps your tunnel alive as long as your client is connected — persistent names, tied to your GitHub account, no clock running out on you.
+Free tiers on existing tunnel tools expire your URL every couple hours, forcing you to re-paste links mid-demo or mid-webhook-test. Helix keeps your tunnel alive as long as your client is connected — persistent names, tied to your account, no clock running out on you.
 
 ## Features
 
 - 🔗 **Persistent public URLs** — claim a name, keep it across restarts
-- 🔐 **GitHub OAuth login** — no passwords, no separate account system
+- 🔐 **Email sign-in (Radon)** — passwordless codes, self-hosted, no vendor lock-in
 - 🩺 **Auto-reconnect + heartbeat** — dead tunnels get swept automatically
 - 🧵 **HTML path rewriting** — relative asset links resolve correctly through the tunnel
 - 🆓 **Free to self-host** — no paid infra required to run your own instance
@@ -55,7 +55,7 @@ npm install -g helix-tunnel
 helix login
 ```
 
-Opens your browser to authenticate with GitHub. Your session is saved locally — you won't need to log in again.
+Enter your email and the 6-digit verification code. Your session is saved locally — you won't need to log in again.
 
 ### Start a tunnel
 
@@ -80,32 +80,45 @@ cd helix
 # relay server
 cd relay
 pnpm install
-cp .env.example .env   # add your GitHub OAuth + Appwrite credentials
+cp .env.example .env   # Radon + Appwrite credentials
+pnpm init-db
+pnpm dev
+
+# web dashboard
+cd ../app
+pnpm install
+cp .env.example .env
+pnpm init-db
 pnpm dev
 
 # cli client
 cd ../client
 pnpm install
-pnpm dev <name> <port>
+pnpm build
+node dist/index.js login
 ```
 
 ### Environment variables
 
 | Variable | Description |
 |---|---|
-| `GITHUB_CLIENT_ID` | GitHub OAuth App client ID |
-| `GITHUB_CLIENT_SECRET` | GitHub OAuth App client secret |
+| `RADON_SECRET` | JWT signing secret (`openssl rand -hex 32`) |
+| `DATABASE_URL` | Postgres URL for Radon auth tables |
+| `RESEND_API_KEY` | Resend API key for email verification codes |
+| `RADON_EMAIL_FROM` | From address for auth emails |
 | `APPWRITE_ENDPOINT` | Your Appwrite instance URL |
 | `APPWRITE_PROJECT_ID` | Appwrite project ID |
 | `APPWRITE_API_KEY` | Appwrite API key |
 | `APPWRITE_DB_ID` | Appwrite database ID |
 
+Auth is powered by [Radon](https://radonsdk.xyz/docs) — see their docs for optional Google OAuth and other providers.
+
 ## Tech stack
 
 - **Relay server** — Node.js, TypeScript, Express, `ws`
 - **CLI client** — Node.js, TypeScript
-- **Database** — Appwrite
-- **Auth** — GitHub OAuth
+- **Database** — Appwrite (tunnels, billing) + Postgres (Radon auth)
+- **Auth** — [Radon](https://radonsdk.xyz/docs) (email codes)
 - **Hosting** — Render (free tier)
 - **Package manager** — pnpm
 

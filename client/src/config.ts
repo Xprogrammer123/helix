@@ -12,9 +12,7 @@ export function getRelayWsUrl(): string {
 
 export const RELAY_HTTP = getRelayHttpUrl();
 export const RELAY_WS = getRelayWsUrl();
-export const GITHUB_CALLBACK_URL = `${RELAY_HTTP}/auth/github/callback`;
 export const DASHBOARD_UPGRADE_URL =
   (process.env.DASHBOARD_URL || 'https://helix01.vercel.app').replace(/\/$/, '') +
   '/dashboard/upgrade';
 
-export const CLI_CALLBACK_PORT = 51234;
