@@ -97,7 +97,7 @@ const proFeatures = [
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-dark text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_-10%,rgba(34,197,94,0.12),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_-10%,rgba(255,255,255,0.08),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_20%,rgba(255,255,255,0.06),transparent)]" />
       <DotPattern
         width={28}
@@ -170,8 +170,8 @@ export function LandingPage() {
                   size={80}
                   duration={8}
                   borderWidth={1}
-                  colorFrom="#22c55e"
-                  colorTo="#86efac"
+                  colorFrom="#ffffff"
+                  colorTo="rgba(255,255,255,0.4)"
                 />
                 <HugeiconsIcon
                   icon={TerminalIcon}
@@ -199,14 +199,14 @@ export function LandingPage() {
             transition={{ duration: 0.55, delay: 0.12 }}
             className="relative flex w-full justify-center"
           >
-            <div className="pointer-events-none absolute inset-x-0 -bottom-8 h-40 bg-[radial-gradient(ellipse_at_bottom,rgba(34,197,94,0.2),transparent_70%)] sm:h-56" />
+            <div className="pointer-events-none absolute inset-x-0 -bottom-8 h-40 bg-[radial-gradient(ellipse_at_bottom,rgba(255,255,255,0.12),transparent_70%)] sm:h-56" />
             <div className="relative w-full max-w-5xl">
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-[0_50px_100px_-40px_rgba(0,0,0,0.9)] sm:rounded-3xl">
                 <BorderBeam
                   size={160}
                   duration={10}
                   borderWidth={1}
-                  colorFrom="#22c55e"
+                  colorFrom="#ffffff"
                   colorTo="transparent"
                 />
                 <Terminal className="max-h-none max-w-none rounded-2xl border-0 bg-transparent sm:rounded-3xl [&_code]:gap-y-1.5 sm:[&_code]:gap-y-2 [&_pre]:p-4 sm:[&_pre]:p-8 [&_span]:text-sm sm:[&_span]:text-lg [&_div.grid]:text-sm sm:[&_div.grid]:text-lg">
@@ -279,7 +279,7 @@ export function LandingPage() {
                     f.span
                   )}
                 >
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(34,197,94,0.08),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.06),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   <div className="relative flex items-center gap-2.5">
                     <div className="flex size-8 items-center justify-center rounded-lg bg-white/5 text-accent">
                       <HugeiconsIcon
@@ -304,7 +304,7 @@ export function LandingPage() {
 
         {/* Pro — Free vs Pro comparison */}
         <section className="relative border-t border-white/5 py-24">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_50%,rgba(34,197,94,0.07),transparent)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_50%,rgba(255,255,255,0.05),transparent)]" />
           <div className="relative mx-auto max-w-6xl px-6">
             <div className="mb-14 max-w-2xl">
               <p className="font-mono text-xs tracking-wide text-accent">
@@ -364,8 +364,8 @@ export function LandingPage() {
                   size={90}
                   duration={11}
                   borderWidth={1}
-                  colorFrom="#22c55e"
-                  colorTo="#86efac"
+                  colorFrom="#ffffff"
+                  colorTo="rgba(255,255,255,0.4)"
                 />
                 <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-accent/15 blur-3xl" />
                 <div className="relative flex items-baseline justify-between gap-4">
@@ -474,7 +474,7 @@ export function LandingPage() {
 
         {/* Closing CTA — full-bleed */}
         <section className="relative overflow-hidden border-t border-white/5">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_100%,rgba(34,197,94,0.14),transparent_60%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_100%,rgba(255,255,255,0.1),transparent_60%)]" />
           <DotPattern
             width={24}
             height={24}
@@ -501,8 +501,8 @@ export function LandingPage() {
                     size={70}
                     duration={9}
                     borderWidth={1}
-                    colorFrom="#22c55e"
-                    colorTo="#86efac"
+                    colorFrom="#ffffff"
+                    colorTo="rgba(255,255,255,0.4)"
                   />
                   <code className="font-mono text-sm text-white">{INSTALL}</code>
                   <CopyButton value={INSTALL} label="Install command copied" />
@@ -557,10 +557,10 @@ function FeatureVisual({
           </p>
           <div className="mt-4 space-y-1.5 text-white/35">
             <p>
-              <span className="text-sky-400">GET</span> /api/health → 200
+              <span className="text-white/50">GET</span> /api/health → 200
             </p>
             <p>
-              <span className="text-sky-400">POST</span> /webhooks → 201
+              <span className="text-white/50">POST</span> /webhooks → 201
             </p>
             <p className="text-white/20">Waiting for requests…</p>
           </div>

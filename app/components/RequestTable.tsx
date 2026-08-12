@@ -18,7 +18,7 @@ function statusColor(status: number) {
 function methodColor(method: string) {
   switch (method.toUpperCase()) {
     case "GET":
-      return "text-sky-400 bg-sky-400/10";
+      return "text-white/50 bg-white/10";
     case "POST":
       return "text-accent bg-accent/10";
     case "PUT":

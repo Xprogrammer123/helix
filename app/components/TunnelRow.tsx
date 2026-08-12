@@ -22,7 +22,7 @@ export function TunnelRow({ tunnel, publicBase }: TunnelRowProps) {
       <span
         className={cn(
           "size-2 shrink-0 rounded-full",
-          tunnel.live ? "bg-accent shadow-[0_0_8px_rgba(34,197,94,0.55)]" : "bg-white/25"
+          tunnel.live ? "bg-accent shadow-[0_0_8px_rgba(255,255,255,0.45)]" : "bg-white/25"
         )}
         title={tunnel.live ? "Live" : "Offline"}
       />

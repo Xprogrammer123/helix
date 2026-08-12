@@ -270,7 +270,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                         href={`/dashboard/tunnels/${encodeURIComponent(t.name)}`}
                         className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-white/[0.03]"
                       >
-                        <span className="size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_6px_rgba(34,197,94,0.5)]" />
+                        <span className="size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium text-white">
                             {t.name}

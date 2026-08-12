@@ -282,7 +282,7 @@ export const Terminal = ({
         <div className="flex flex-row gap-x-2">
           <div className="h-2 w-2 rounded-full bg-red-500" />
           <div className="h-2 w-2 rounded-full bg-yellow-500" />
-          <div className="h-2 w-2 rounded-full bg-green-500" />
+          <div className="h-2 w-2 rounded-full bg-white/40" />
         </div>
       </div>
       <pre className="scrollbar-none overflow-auto p-4">
