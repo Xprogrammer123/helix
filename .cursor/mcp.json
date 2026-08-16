@@ -1,9 +1,10 @@
 {
   "mcpServers": {
     "kroma": {
+      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@kromamcp/server"],
-      "envFile": ".cursor/.env"
+      "envFile": "${workspaceFolder}/.cursor/.env"
     }
   }
 }

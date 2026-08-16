@@ -1,19 +1,31 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-dark: #131313;
-  --color-accent: #ffffff;
-  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --color-dark: #07080a;
+  --color-surface: #0e1114;
+  --color-panel: #14181c;
+  --color-accent: #5cffb1;
+  --color-accent-dim: #2a9a6a;
+  --color-ink: #eaf8f0;
+  --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), "Google Sans", sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "Cascadia Code", Menlo, monospace;
 }
 
 @font-face {
-  font-family: Google Sans;
+  font-family: "Google Sans";
   src: url("/GoogleSansFlex-VariableFont_GRAD\,ROND\,opsz\,slnt\,wdth\,wght.ttf");
+  font-display: swap;
 }
 
 * {
-  font-family: "Google Sans", sans-serif;
-  letter-spacing: -0.5px;
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.06em;
 }
 
 .font-mono {
@@ -40,4 +52,55 @@
 
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+@keyframes helix-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes helix-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes signal-dash {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-helix-spin {
+  animation: helix-spin 48s linear infinite;
+}
+
+.animate-helix-pulse {
+  animation: helix-pulse 5s ease-in-out infinite;
+}
+
+.animate-signal-dash {
+  animation: signal-dash 2.8s linear infinite;
+}
+
+.animate-float-y {
+  animation: float-y 7s ease-in-out infinite;
 }

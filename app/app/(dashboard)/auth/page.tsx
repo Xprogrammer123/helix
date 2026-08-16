@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Stars } from "@/components/Stars";
-import { StarBackground } from "@/components/StarBackground";
+import { HelixField } from "@/components/HelixField";
 import { toast } from "@heroui/react";
 
 function AuthCard() {
@@ -74,44 +72,41 @@ function AuthCard() {
   }
 
   return (
-    <div className="flex flex-col z-50 items-center justify-center w-full max-w-md px-6">
-      <Image
-        src="/logo.png"
-        alt="Logo"
-        width={1000}
-        height={1000}
-        className="h-auto mb-8 w-20"
-      />
-      <h1 className="font-semibold text-3xl md:text-4xl text-center text-white/50">
-        Share what&apos;s running on <br /> your machine,{" "}
-        <span className="text-white">instantly.</span>
+    <div className="relative z-10 flex w-full max-w-md flex-col items-center px-6">
+      <Link href="/" className="font-display text-2xl font-bold tracking-tight text-ink">
+        HELIX
+      </Link>
+      <h1 className="font-display mt-10 text-center text-3xl font-bold tracking-tight text-ink/45 md:text-4xl">
+        Share what&apos;s running on
+        <br />
+        <span className="text-ink">your machine.</span>
       </h1>
 
       {!sent ? (
-        <div className="w-full mt-8 space-y-3">
+        <div className="mt-10 w-full space-y-3">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
-            className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 outline-none focus:border-white/25"
+            className="w-full rounded-full border border-ink/10 bg-surface/80 px-5 py-3.5 text-ink placeholder:text-ink/35 outline-none backdrop-blur focus:border-accent/40"
             onKeyDown={(e) => e.key === "Enter" && sendCode()}
           />
           <button
             onClick={sendCode}
             disabled={loading}
-            className="bg-linear-to-b from-[#303030] text-white w-full flex items-center gap-3 justify-center p-2.5 cursor-pointer rounded-full text-lg font-medium to-[#212121] disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+            className="flex w-full items-center justify-center gap-3 rounded-full bg-accent p-3 text-lg font-medium text-dark transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
-              <span className="size-4.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="size-4.5 animate-spin rounded-full border-2 border-dark/30 border-t-dark" />
             ) : null}
             {loading ? "Sending..." : "Continue with email"}
           </button>
         </div>
       ) : (
-        <div className="w-full mt-8 space-y-3">
-          <p className="text-center text-sm text-white/50 mb-2">
-            Code sent to <span className="text-white">{email}</span>
+        <div className="mt-10 w-full space-y-3">
+          <p className="mb-2 text-center text-sm text-ink/45">
+            Code sent to <span className="text-ink">{email}</span>
           </p>
           <input
             type="text"
@@ -119,13 +114,13 @@ function AuthCard() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="6-digit code"
-            className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-center text-white tracking-widest placeholder:text-white/40 outline-none focus:border-white/25"
+            className="w-full rounded-full border border-ink/10 bg-surface/80 px-5 py-3.5 text-center font-mono text-lg tracking-[0.35em] text-ink placeholder:tracking-normal placeholder:text-ink/35 outline-none backdrop-blur focus:border-accent/40"
             onKeyDown={(e) => e.key === "Enter" && verify()}
           />
           <button
             onClick={verify}
             disabled={loading}
-            className="bg-linear-to-b from-[#303030] text-white w-full flex items-center justify-center p-2.5 cursor-pointer rounded-full text-lg font-medium to-[#212121] disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+            className="flex w-full items-center justify-center rounded-full bg-accent p-3 text-lg font-medium text-dark transition-opacity disabled:opacity-60"
           >
             {loading ? "Verifying..." : "Verify & sign in"}
           </button>
@@ -135,20 +130,20 @@ function AuthCard() {
               setSent(false);
               setCode("");
             }}
-            className="w-full text-sm text-white/50 hover:text-white transition-colors"
+            className="w-full text-sm text-ink/40 transition-colors hover:text-ink"
           >
             Use a different email
           </button>
         </div>
       )}
 
-      <p className="text-white/50 w-60 text-center mx-auto mt-6">
+      <p className="mx-auto mt-8 w-60 text-center text-sm text-ink/40">
         By continuing, you agree to Helix&apos;s{" "}
-        <Link href="/terms" className="text-white font-medium">
+        <Link href="/terms" className="font-medium text-ink">
           Terms
         </Link>{" "}
         &{" "}
-        <Link href="/privacy" className="text-white font-medium">
+        <Link href="/privacy" className="font-medium text-ink">
           Privacy Policy.
         </Link>
       </p>
@@ -159,22 +154,18 @@ function AuthCard() {
 function LoginFallback() {
   return (
     <div className="flex items-center justify-center">
-      <span className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      <span className="size-6 animate-spin rounded-full border-2 border-ink/20 border-t-accent" />
     </div>
   );
 }
 
-const AuthPage = () => {
+export default function AuthPage() {
   return (
-    <div className="h-screen w-screen relative bg-dark flex flex-col items-center justify-center">
-      <div className="bg-white h-7 w-160 rounded-full blur-[200px] absolute -top-12"></div>
-      <Stars />
-      <StarBackground />
+    <div className="relative flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-dark">
+      <HelixField intensity="hero" />
       <Suspense fallback={<LoginFallback />}>
         <AuthCard />
       </Suspense>
     </div>
   );
-};
-
-export default AuthPage;
+}

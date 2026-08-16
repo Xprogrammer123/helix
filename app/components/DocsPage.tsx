@@ -1,74 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { HelixField } from "@/components/HelixField";
 import { cn } from "@/lib/utils";
 
 const sections = [
   { id: "getting-started", label: "Getting Started" },
-  { id: "cli", label: "CLI Reference" },
-  { id: "self-hosting", label: "Self-Hosting" },
+  { id: "cli", label: "CLI" },
+  { id: "dashboard", label: "Dashboard" },
+  { id: "pro", label: "Helix Pro" },
 ] as const;
-
-const envVars = [
-  {
-    name: "RELAY_URL",
-    desc: "Relay API URL (server-side proxy)",
-  },
-  {
-    name: "NEXT_PUBLIC_RELAY_URL",
-    desc: "Public relay URL shown in dashboard tunnel links",
-  },
-  {
-    name: "NEXT_PUBLIC_APP_URL",
-    desc: "Dashboard URL (billing callbacks)",
-  },
-  {
-    name: "RADON_SECRET",
-    desc: "JWT signing secret for Radon auth (relay + dashboard)",
-  },
-  {
-    name: "DATABASE_URL",
-    desc: "Postgres connection string for Radon user/session tables",
-  },
-  {
-    name: "RESEND_API_KEY",
-    desc: "Resend API key for email verification codes",
-  },
-  {
-    name: "RADON_EMAIL_FROM",
-    desc: "From address for auth emails, e.g. Helix <auth@yourdomain.com>",
-  },
-  {
-    name: "APPWRITE_ENDPOINT",
-    desc: "Appwrite API endpoint URL",
-  },
-  {
-    name: "APPWRITE_PROJECT_ID",
-    desc: "Appwrite project ID",
-  },
-  {
-    name: "APPWRITE_API_KEY",
-    desc: "Appwrite API key with DB access",
-  },
-  {
-    name: "APPWRITE_DB_ID",
-    desc: "Appwrite database ID (users, tunnels, requests)",
-  },
-  {
-    name: "PAYSTACK_SECRET_KEY",
-    desc: "Paystack secret key (relay only — never expose client-side)",
-  },
-  {
-    name: "PAYSTACK_PUBLIC_KEY",
-    desc: "Paystack public key (reference only for dashboard)",
-  },
-  {
-    name: "DASHBOARD_URL",
-    desc: "Next.js app URL for OAuth redirect and billing callbacks",
-  },
-];
 
 export function DocsPage() {
   const [active, setActive] = useState<string>(sections[0].id);
@@ -93,30 +35,27 @@ export function DocsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-dark text-white">
-      <header className="fixed w-screen top-0 z-20 border-b border-white/5 bg-dark/90 backdrop-blur-md">
+    <div className="relative min-h-screen overflow-x-hidden bg-dark text-ink">
+      <HelixField intensity="soft" className="fixed opacity-50" />
+
+      <header className="fixed top-0 z-20 w-screen border-b border-ink/8 bg-dark/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <Image
-              src="/logo.png"
-              alt="Helix"
-              width={100}
-              height={36}
-              className="h-7 w-auto"
-            />
-            {/* <span className="font-semibold">Helix</span> */}
-            <span className="ml-1 text-sm text-white/30">Docs</span>
+            <span className="font-display text-lg font-bold tracking-tight">
+              HELIX
+            </span>
+            <span className="text-sm text-ink/30">Docs</span>
           </Link>
           <Link
             href="/auth"
-            className="text-sm text-white/45 transition-colors hover:text-white"
+            className="text-sm text-ink/45 transition-colors hover:text-ink"
           >
             Dashboard
           </Link>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-5xl mt-12 gap-10 px-6 py-10">
+      <div className="relative z-10 mx-auto mt-12 flex max-w-5xl gap-10 px-6 py-10">
         <aside className="fixed top-24 hidden h-fit w-44 shrink-0 md:block">
           <nav className="flex flex-col gap-1">
             {sections.map((s) => (
@@ -126,8 +65,8 @@ export function DocsPage() {
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-sm transition-colors",
                   active === s.id
-                    ? "bg-[#252525] text-white"
-                    : "text-white/40 hover:text-white/70"
+                    ? "bg-accent/15 text-accent"
+                    : "text-ink/40 hover:text-ink/70"
                 )}
               >
                 {s.label}
@@ -136,179 +75,199 @@ export function DocsPage() {
           </nav>
         </aside>
 
-        <article className="min-w-0 md:ml-64 flex-1 space-y-16 pb-24">
+        <article className="min-w-0 flex-1 space-y-16 pb-24 md:ml-64">
           <section id="getting-started" className="scroll-mt-28">
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="font-display text-4xl font-bold tracking-tight">
               Getting Started
             </h1>
-            <p className="mt-3 text-white/45">
-              Helix exposes a local port through your self-hosted relay at a
-              path like{" "}
-              <code className="font-mono text-white">
-                /tunnel/&#123;name&#125;/
-              </code>
-              .
+            <p className="mt-3 text-ink/45">
+              Helix gives your local app a public URL so you can share demos,
+              test webhooks, or preview work without deploying.
             </p>
 
             <h2 className="mt-8 text-lg font-medium">1. Install the CLI</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-ink/10 bg-surface p-4 font-mono text-sm text-accent">
               npm install -g helix
             </pre>
 
             <h2 className="mt-8 text-lg font-medium">2. Log in</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-ink/10 bg-surface p-4 font-mono text-sm text-accent">
               helix login
             </pre>
-            <p className="mt-3 text-sm text-white/40">
-              Enter your email in the terminal, then type the 6-digit code sent
-              to your inbox. Your session JWT is saved locally at{" "}
-              <code className="font-mono text-white/60">~/.helix/config.json</code>.
+            <p className="mt-3 text-sm text-ink/40">
+              Enter your email, then the 6-digit code from your inbox. You can
+              also sign in on the web at{" "}
+              <Link
+                href="/auth"
+                className="text-ink/70 underline underline-offset-2"
+              >
+                /auth
+              </Link>
+              .
             </p>
 
             <h2 className="mt-8 text-lg font-medium">3. Start a tunnel</h2>
-            <pre className="mt-3 overflow-x-auto rounded-xl border border-white/8 bg-[#161616] p-4 font-mono text-sm text-white">
+            <pre className="mt-3 overflow-x-auto rounded-xl border border-ink/10 bg-surface p-4 font-mono text-sm text-accent">
               helix myapp 3000
             </pre>
-            <p className="mt-3 text-sm text-white/40">
-              First claim wins the name for your account. While the CLI is
-              connected, traffic to{" "}
-              <code className="font-mono text-white/60">
-                /tunnel/myapp/
-              </code>{" "}
-              is proxied to{" "}
-              <code className="font-mono text-white/60">localhost:3000</code>.
+            <p className="mt-3 text-sm text-ink/40">
+              Your server on{" "}
+              <code className="font-mono text-ink/60">localhost:3000</code> is
+              available at{" "}
+              <code className="font-mono text-ink/60">/tunnel/myapp/</code> on
+              the Helix host. Keep the CLI running while you need the tunnel.
             </p>
           </section>
 
           <section id="cli" className="scroll-mt-28">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              CLI Reference
+            <h1 className="font-display text-4xl font-bold tracking-tight">
+              CLI
             </h1>
-            <p className="mt-3 text-white/45">
-              Tunnels are created from the CLI only. The dashboard is read-only.
+            <p className="mt-3 text-ink/45">
+              Create and run tunnels from the CLI. The dashboard is for viewing
+              status and traffic.
             </p>
 
-            <div className="mt-8 overflow-hidden rounded-xl border border-white/8">
+            <div className="mt-8 overflow-hidden rounded-xl border border-ink/10">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-white/8 bg-[#161616] text-xs uppercase tracking-wide text-white/30">
+                <thead className="border-b border-ink/10 bg-surface text-xs tracking-wide text-ink/30 uppercase">
                   <tr>
                     <th className="px-4 py-3 font-medium">Command</th>
-                    <th className="px-4 py-3 font-medium">Description</th>
+                    <th className="px-4 py-3 font-medium">What it does</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-ink/8">
                   <tr>
-                    <td className="px-4 py-3 font-mono text-white">
+                    <td className="px-4 py-3 font-mono text-accent">
                       helix login
                     </td>
-                    <td className="px-4 py-3 text-white/50">
-                      Authenticate with an email verification code and store a
-                      session token locally.
+                    <td className="px-4 py-3 text-ink/50">
+                      Sign in with an email code and save your session on this
+                      machine.
                     </td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-mono text-white">
-                      helix &lt;name&gt; &lt;port&gt; [--password=xxx]
+                    <td className="px-4 py-3 font-mono text-accent">
+                      helix &lt;name&gt; &lt;port&gt;
                     </td>
-                    <td className="px-4 py-3 text-white/50">
-                      Register{" "}
-                      <code className="font-mono text-white/70">name</code> with
-                      the relay and forward HTTP (and WebSocket upgrades) to{" "}
-                      <code className="font-mono text-white/70">
+                    <td className="px-4 py-3 text-ink/50">
+                      Open a tunnel named{" "}
+                      <code className="font-mono text-ink/70">name</code> to{" "}
+                      <code className="font-mono text-ink/70">
                         localhost:port
                       </code>
-                      . Optional{" "}
-                      <code className="font-mono text-white/70">--password</code>{" "}
-                      enables HTTP Basic Auth on the public URL (
-                      <span className="text-accent">Pro only</span>).
+                      .
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 font-mono text-accent">
+                      helix &lt;name&gt; &lt;port&gt; --password=…
+                    </td>
+                    <td className="px-4 py-3 text-ink/50">
+                      Same as above, with a password on the public URL (
+                      <span className="text-accent">Pro</span>).
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <h2 className="mt-8 text-lg font-medium">Environment</h2>
-            <p className="mt-2 text-sm text-white/40">
-              Optional:{" "}
-              <code className="font-mono text-white/60">RELAY_URL</code> —
-              WebSocket register URL (default{" "}
-              <code className="font-mono text-white/60">
-                wss://helix-t47s.onrender.com/register
-              </code>
-              ).
+            <h2 className="mt-8 text-lg font-medium">Tips</h2>
+            <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-ink/45">
+              <li>Start your local app before opening the tunnel.</li>
+              <li>
+                Leave the CLI process running for as long as you need the link.
+              </li>
+              <li>
+                Free accounts can run one active tunnel at a time. Upgrade for
+                more.
+              </li>
+            </ul>
+          </section>
+
+          <section id="dashboard" className="scroll-mt-28">
+            <h1 className="font-display text-4xl font-bold tracking-tight">
+              Dashboard
+            </h1>
+            <p className="mt-3 text-ink/45">
+              After you sign in, the dashboard shows your tunnels and recent
+              request traffic.
+            </p>
+
+            <h2 className="mt-8 text-lg font-medium">Home</h2>
+            <p className="mt-2 text-sm text-ink/40">
+              Overview of your account and quick links to tunnels and billing.
+            </p>
+
+            <h2 className="mt-8 text-lg font-medium">Tunnels</h2>
+            <p className="mt-2 text-sm text-ink/40">
+              See every tunnel name you&apos;ve claimed, whether it&apos;s live,
+              and how many requests it has received. Open a tunnel to inspect
+              recent requests.
+            </p>
+
+            <h2 className="mt-8 text-lg font-medium">Billing</h2>
+            <p className="mt-2 text-sm text-ink/40">
+              Check your plan and upgrade to Helix Pro when you need longer
+              sessions, more concurrent tunnels, or password protection.
             </p>
           </section>
 
-          <section id="self-hosting" className="scroll-mt-28">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Self-Hosting
+          <section id="pro" className="scroll-mt-28">
+            <h1 className="font-display text-4xl font-bold tracking-tight">
+              Helix Pro
             </h1>
-            <p className="mt-3 text-white/45">
-              Run{" "}
-              <code className="font-mono text-white/70">relay/</code> as an
-              Express + WebSocket server. It owns OAuth callbacks, tunnel
-              registration, request logging, and path-based proxying.
+            <p className="mt-3 text-ink/45">
+              Free is enough for quick demos. Pro is for work that needs the
+              tunnel to stay up and scale with you.
             </p>
 
-            <h2 className="mt-8 text-lg font-medium">Relay env vars</h2>
-            <div className="mt-4 overflow-hidden rounded-xl border border-white/8">
+            <div className="mt-8 overflow-hidden rounded-xl border border-ink/10">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-white/8 bg-[#161616] text-xs uppercase tracking-wide text-white/30">
+                <thead className="border-b border-ink/10 bg-surface text-xs tracking-wide text-ink/30 uppercase">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Variable</th>
-                    <th className="px-4 py-3 font-medium">Purpose</th>
+                    <th className="px-4 py-3 font-medium">Feature</th>
+                    <th className="px-4 py-3 font-medium">Free</th>
+                    <th className="px-4 py-3 font-medium">Pro</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
-                  {envVars.map((v) => (
-                    <tr key={v.name}>
-                      <td className="px-4 py-3 font-mono text-white whitespace-nowrap">
-                        {v.name}
-                      </td>
-                      <td className="px-4 py-3 text-white/50">{v.desc}</td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-ink/8">
+                  <tr>
+                    <td className="px-4 py-3 text-ink/70">Active tunnels</td>
+                    <td className="px-4 py-3 text-ink/50">1</td>
+                    <td className="px-4 py-3 text-ink/50">Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-ink/70">Request history</td>
+                    <td className="px-4 py-3 text-ink/50">Recent only</td>
+                    <td className="px-4 py-3 text-ink/50">Full history</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-ink/70">Idle timeout</td>
+                    <td className="px-4 py-3 text-ink/50">Short</td>
+                    <td className="px-4 py-3 text-ink/50">Long-lived</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-ink/70">
+                      Password protection
+                    </td>
+                    <td className="px-4 py-3 text-ink/50">—</td>
+                    <td className="px-4 py-3 text-ink/50">Yes</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
 
-            <h2 className="mt-8 text-lg font-medium">Auth (Radon)</h2>
-            <p className="mt-2 text-sm text-white/40">
-              Helix uses{" "}
-              <a
-                href="https://radonsdk.xyz/docs"
-                className="text-white underline underline-offset-2"
-                target="_blank"
-                rel="noreferrer"
+            <p className="mt-6 text-sm text-ink/40">
+              Upgrade from{" "}
+              <Link
+                href="/dashboard/upgrade"
+                className="text-accent underline underline-offset-2"
               >
-                Radon
-              </a>{" "}
-              for passwordless email sign-in. The dashboard mounts Radon at{" "}
-              <code className="font-mono text-white/60">/api/auth/*</code> and
-              stores a{" "}
-              <code className="font-mono text-white/60">radon_session</code>{" "}
-              cookie. Run{" "}
-              <code className="font-mono text-white/60">pnpm init-db</code> once
-              in relay and app to create Radon tables in Postgres.
+                Dashboard → Upgrade
+              </Link>
+              .
             </p>
-
-            <h2 className="mt-8 text-lg font-medium">Appwrite collections</h2>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-white/45">
-              <li>
-                <code className="font-mono text-white/70">users</code> —
-                radon_user_id, email, username, token (legacy), name, plan,
-                plan_expires_at, paystack_customer_code,
-                paystack_subscription_code
-              </li>
-              <li>
-                <code className="font-mono text-white/70">tunnels</code> — name,
-                user_id, password_hash (optional, Pro)
-              </li>
-              <li>
-                <code className="font-mono text-white/70">requests</code> —
-                tunnel_name, method, path, status, duration_ms, timestamp
-              </li>
-            </ul>
           </section>
         </article>
       </div>

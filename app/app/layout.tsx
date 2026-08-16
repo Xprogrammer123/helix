@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
+import { JetBrains_Mono, Syne } from "next/font/google";
 import "./globals.css";
+
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Helix",
-  description: "Self-hosted localhost tunneling",
+  description: "Expose your localhost on a path. Self-hosted tunnels.",
 };
 
 export default function RootLayout({
@@ -12,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-dark text-white antialiased">{children}</body>
+    <html lang="en" className={`dark ${syne.variable} ${jetbrains.variable}`}>
+      <body className="bg-dark text-ink antialiased">{children}</body>
     </html>
   );
 }

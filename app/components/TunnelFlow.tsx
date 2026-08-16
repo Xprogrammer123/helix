@@ -15,28 +15,35 @@ function Node({
   icon,
   label,
   sub,
-  className,
+  highlight,
 }: {
   refProp: RefObject<HTMLDivElement | null>;
   icon: typeof ComputerIcon;
   label: string;
   sub: string;
-  className?: string;
+  highlight?: boolean;
 }) {
   return (
     <div
       ref={refProp}
       className={cn(
-        "relative z-10 flex w-36 flex-col items-center gap-2 rounded-2xl border border-white/10 bg-[#181818] px-4 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] sm:w-40",
-        className
+        "relative z-10 flex w-36 flex-col items-center gap-3 rounded-2xl border px-4 py-5 sm:w-44",
+        highlight
+          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_-12px_rgba(92,255,177,0.55)]"
+          : "border-ink/10 bg-surface/90"
       )}
     >
-      <div className="flex size-10 items-center justify-center rounded-xl bg-white/5 text-accent">
+      <div
+        className={cn(
+          "flex size-11 items-center justify-center rounded-xl",
+          highlight ? "bg-accent text-dark" : "bg-ink/5 text-accent"
+        )}
+      >
         <HugeiconsIcon icon={icon} size={20} color="currentColor" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-medium text-white">{label}</p>
-        <p className="mt-0.5 font-mono text-[11px] text-white/35">{sub}</p>
+        <p className="text-sm font-medium text-ink">{label}</p>
+        <p className="mt-1 font-mono text-[11px] text-ink/35">{sub}</p>
       </div>
     </div>
   );
@@ -51,20 +58,15 @@ export function TunnelFlow() {
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full items-center justify-between gap-4 overflow-hidden px-2 py-10 sm:px-8"
+      className="relative flex w-full items-center justify-between gap-3 overflow-hidden px-1 py-12 sm:gap-6 sm:px-6"
     >
-      <Node
-        refProp={localRef}
-        icon={ComputerIcon}
-        label="Localhost"
-        sub=":3000"
-      />
+      <Node refProp={localRef} icon={ComputerIcon} label="Localhost" sub=":3000" />
       <Node
         refProp={relayRef}
         icon={ServerStack01Icon}
         label="Helix relay"
         sub="self-hosted"
-        className="border-accent/25 bg-accent/[0.04]"
+        highlight
       />
       <Node
         refProp={publicRef}
@@ -77,17 +79,23 @@ export function TunnelFlow() {
         containerRef={containerRef}
         fromRef={localRef}
         toRef={relayRef}
-        curvature={-18}
-        duration={3.5}
+        curvature={-22}
+        duration={3}
+        pathColor="rgba(92,255,177,0.15)"
+        gradientStartColor="#5cffb1"
+        gradientStopColor="#2a9a6a"
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={relayRef}
         toRef={publicRef}
-        curvature={18}
-        duration={3.5}
-        delay={0.6}
+        curvature={22}
+        duration={3}
+        delay={0.5}
         reverse
+        pathColor="rgba(92,255,177,0.15)"
+        gradientStartColor="#5cffb1"
+        gradientStopColor="#2a9a6a"
       />
     </div>
   );
