@@ -32,7 +32,7 @@ export function CopyButton({ value, className, label }: CopyButtonProps) {
       onClick={onCopy}
       aria-label="Copy"
       className={cn(
-        "inline-flex size-8 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/5 hover:text-white",
+        "inline-flex size-8 items-center justify-center rounded-lg text-ink/40 transition-colors hover:bg-ink/5 hover:text-accent",
         className
       )}
     >

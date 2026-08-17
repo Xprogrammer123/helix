@@ -37,11 +37,11 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#1a1a1a] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-2xl border border-accent/20 bg-panel p-6 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
+          className="absolute right-4 top-4 rounded-lg p-1 text-ink/40 transition-colors hover:bg-ink/5 hover:text-ink/70"
         >
           <HugeiconsIcon icon={Cancel01Icon} size={18} color="currentColor" />
         </button>
@@ -51,10 +51,10 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
           Helix Pro · {PRO_PRICE_LABEL}
         </div>
 
-        <h2 className="pr-8 text-xl font-semibold text-white">{copy.headline}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-white/45">{copy.subline}</p>
+        <h2 className="pr-8 font-display text-xl font-bold text-ink">{copy.headline}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-ink/45">{copy.subline}</p>
 
-        <ul className="mt-5 space-y-3 text-sm text-white/55">
+        <ul className="mt-5 space-y-3 text-sm text-ink/55">
           <ProBullet
             title="Persistent demo links"
             body="No idle disconnect — your tunnel stays up through client calls."
@@ -77,14 +77,14 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
           <button
             type="button"
             onClick={startCheckout}
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-black transition-opacity hover:opacity-90"
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-dark transition-opacity hover:opacity-90"
           >
             Upgrade — {PRO_PRICE_LABEL}
           </button>
           <Link
             href="/dashboard/upgrade"
             onClick={onClose}
-            className="text-sm text-white/45 transition-colors hover:text-white/70"
+            className="text-sm text-ink/45 transition-colors hover:text-ink/70"
           >
             View full details
           </Link>
@@ -99,8 +99,8 @@ function ProBullet({ title, body }: { title: string; body: string }) {
     <li className="flex gap-3">
       <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
       <div>
-        <span className="font-medium text-white/80">{title}</span>
-        <span className="text-white/40"> — {body}</span>
+        <span className="font-medium text-ink/80">{title}</span>
+        <span className="text-ink/40"> — {body}</span>
       </div>
     </li>
   );
@@ -118,23 +118,23 @@ export function ProCallout({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[#161616] px-4 py-3 text-sm",
+        "flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/15 bg-accent/[0.04] px-4 py-3 text-sm",
         className
       )}
     >
-      <p className="text-white/50">{children}</p>
+      <p className="text-ink/50">{children}</p>
       {onUpgrade ? (
         <button
           type="button"
           onClick={onUpgrade}
-          className="shrink-0 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="shrink-0 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/25"
         >
           Upgrade to Pro
         </button>
       ) : (
         <Link
           href="/dashboard/upgrade"
-          className="shrink-0 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="shrink-0 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/25"
         >
           Upgrade to Pro
         </Link>

@@ -94,7 +94,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
   if (tunnels === null && !error) {
     return (
       <div className="flex h-full items-center justify-center">
-        <span className="size-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+        <span className="size-5 animate-spin rounded-full border-2 border-ink/20 border-t-accent" />
       </div>
     );
   }
@@ -103,10 +103,10 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
     <div className="scrollbar-none flex h-full flex-col overflow-auto">
       <div className="flex flex-wrap items-end justify-between gap-4 px-6 pt-6 pb-5">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
             Overview
           </h1>
-          <p className="mt-1 text-sm text-white/40">
+          <p className="mt-1 text-sm text-ink/40">
             Live snapshot of your relay — updates every few seconds.
           </p>
         </div>
@@ -117,7 +117,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
           </span>
           <Link
             href="/dashboard/tunnels"
-            className="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink"
           >
             All tunnels
             <HugeiconsIcon icon={ArrowRight01Icon} size={14} color="currentColor" />
@@ -175,9 +175,9 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#191919] lg:col-span-3"
+          className="flex flex-col overflow-hidden rounded-2xl border border-ink/8 bg-panel lg:col-span-3"
         >
-          <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
+          <div className="flex items-center justify-between border-b border-ink/8 px-5 py-4">
             <div className="flex items-center gap-2">
               <HugeiconsIcon
                 icon={Activity01Icon}
@@ -185,9 +185,9 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                 color="currentColor"
                 className="text-accent"
               />
-              <h2 className="text-sm font-medium text-white">Traffic leaders</h2>
+              <h2 className="text-sm font-medium text-ink">Traffic leaders</h2>
             </div>
-            <span className="text-xs text-white/30">by request count</span>
+            <span className="text-xs text-ink/30">by request count</span>
           </div>
 
           {!tunnels || tunnels.length === 0 ? (
@@ -200,9 +200,9 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                 <li key={t.name}>
                   <Link
                     href={`/dashboard/tunnels/${encodeURIComponent(t.name)}`}
-                    className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
+                    className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-ink/[0.03]"
                   >
-                    <span className="w-4 font-mono text-xs text-white/25">
+                    <span className="w-4 font-mono text-xs text-ink/25">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -210,14 +210,14 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                         <span
                           className={cn(
                             "size-1.5 shrink-0 rounded-full",
-                            t.live ? "bg-accent" : "bg-white/25"
+                            t.live ? "bg-accent" : "bg-ink/25"
                           )}
                         />
-                        <span className="truncate text-sm font-medium text-white">
+                        <span className="truncate text-sm font-medium text-ink">
                           {t.name}
                         </span>
                       </div>
-                      <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/5">
+                      <div className="mt-2 h-1 overflow-hidden rounded-full bg-ink/8">
                         <div
                           className="h-full rounded-full bg-accent/70"
                           style={{
@@ -226,7 +226,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                         />
                       </div>
                     </div>
-                    <span className="shrink-0 font-mono text-sm tabular-nums text-white/45">
+                    <span className="shrink-0 font-mono text-sm tabular-nums text-ink/45">
                       {t.requestCount}
                     </span>
                   </Link>
@@ -241,22 +241,22 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#191919]"
+            className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-ink/8 bg-panel"
           >
-            <div className="flex items-center gap-2 border-b border-white/[0.06] px-5 py-4">
+            <div className="flex items-center gap-2 border-b border-ink/8 px-5 py-4">
               <HugeiconsIcon
                 icon={WebhookIcon}
                 size={16}
                 color="currentColor"
                 className="text-accent"
               />
-              <h2 className="text-sm font-medium text-white">Live right now</h2>
+              <h2 className="text-sm font-medium text-ink">Live right now</h2>
             </div>
 
             {liveTunnels.length === 0 ? (
               <div className="flex flex-1 flex-col justify-center gap-2 px-5 py-8">
-                <p className="text-sm text-white/40">No live tunnels.</p>
-                <p className="text-xs text-white/25">
+                <p className="text-sm text-ink/40">No live tunnels.</p>
+                <p className="text-xs text-ink/25">
                   Run the CLI to bring one online.
                 </p>
               </div>
@@ -268,14 +268,14 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                     <li key={t.name}>
                       <Link
                         href={`/dashboard/tunnels/${encodeURIComponent(t.name)}`}
-                        className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-white/[0.03]"
+                        className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-ink/[0.03]"
                       >
-                        <span className="size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
+                        <span className="size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_8px_rgba(92,255,177,0.55)]" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-white">
+                          <p className="truncate text-sm font-medium text-ink">
                             {t.name}
                           </p>
-                          <p className="truncate font-mono text-[11px] text-white/30">
+                          <p className="truncate font-mono text-[11px] text-ink/30">
                             {url}
                           </p>
                         </div>
@@ -283,7 +283,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                           icon={Link01Icon}
                           size={14}
                           color="currentColor"
-                          className="text-white/25"
+                          className="text-ink/25"
                         />
                       </Link>
                     </li>
@@ -297,18 +297,18 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="rounded-2xl border border-white/[0.07] bg-[#191919] p-5"
+            className="rounded-2xl border border-ink/8 bg-panel p-5"
           >
-            <h2 className="text-sm font-medium text-white">Quick start</h2>
-            <p className="mt-1 text-xs text-white/35">
+            <h2 className="text-sm font-medium text-ink">Quick start</h2>
+            <p className="mt-1 text-xs text-ink/35">
               Tunnels are created from the CLI only.
             </p>
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/8 bg-black/40 py-2 pr-2 pl-3">
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-accent/20 bg-dark/40 py-2 pr-2 pl-3">
               <HugeiconsIcon
                 icon={TerminalIcon}
                 size={14}
                 color="currentColor"
-                className="text-white/35"
+                className="text-accent"
               />
               <code className="flex-1 font-mono text-xs text-accent">
                 {CLI_HINT}
@@ -318,14 +318,14 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href="/docs"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-ink/5 px-2.5 py-1.5 text-xs text-ink/55 transition-colors hover:bg-ink/10 hover:text-ink"
               >
                 <HugeiconsIcon icon={BookOpen01Icon} size={12} color="currentColor" />
                 Docs
               </Link>
               <Link
                 href="/dashboard/tunnels"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-ink/5 px-2.5 py-1.5 text-xs text-ink/55 transition-colors hover:bg-ink/10 hover:text-ink"
               >
                 <HugeiconsIcon icon={WebhookIcon} size={12} color="currentColor" />
                 Manage tunnels
@@ -364,23 +364,23 @@ function StatCard({
         type={onClick ? "button" : undefined}
         onClick={onClick}
         className={cn(
-          "w-full rounded-2xl border border-white/[0.07] bg-[#191919] px-5 py-4 text-left",
-          accent && "border-accent/20 bg-accent/[0.04]",
-          onClick && "cursor-pointer transition-colors hover:border-white/12"
+          "w-full rounded-2xl border border-ink/8 bg-panel px-5 py-4 text-left",
+          accent && "border-accent/25 bg-accent/[0.06]",
+          onClick && "cursor-pointer transition-colors hover:border-accent/30"
         )}
       >
-      <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-white/35">
+      <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/35">
         {label}
       </p>
       <p
         className={cn(
           "mt-2.5 font-mono text-3xl font-semibold tabular-nums tracking-tight",
-          accent ? "text-accent" : "text-white"
+          accent ? "text-accent" : "text-ink"
         )}
       >
         {value}
       </p>
-      <p className="mt-1 text-xs text-white/30">{hint}</p>
+      <p className="mt-1 text-xs text-ink/30">{hint}</p>
       </Wrapper>
     </motion.div>
   );
@@ -389,8 +389,8 @@ function StatCard({
 function EmptyPanel() {
   return (
     <div className="flex flex-1 flex-col items-start justify-center gap-3 px-5 py-12">
-      <p className="text-sm text-white/45">No tunnels yet.</p>
-      <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/40 py-2 pr-2 pl-4">
+      <p className="text-sm text-ink/45">No tunnels yet.</p>
+      <div className="flex items-center gap-2 rounded-xl border border-accent/20 bg-dark/40 py-2 pr-2 pl-4">
         <code className="font-mono text-sm text-accent">{CLI_HINT}</code>
         <CopyButton value={CLI_HINT} label="Command copied" />
       </div>

@@ -58,11 +58,11 @@ export function TunnelPassword({ tunnelName, passwordProtected }: TunnelPassword
   }
 
   return (
-    <div className="mt-4 rounded-xl border border-white/[0.06] bg-[#1a1a1a] p-4">
+    <div className="mt-4 rounded-xl border border-ink/8 bg-panel p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-white">Password protection</p>
-          <p className="mt-0.5 text-xs text-white/35">
+          <p className="text-sm font-medium text-ink">Password protection</p>
+          <p className="mt-0.5 text-xs text-ink/35">
             Requires HTTP Basic Auth before forwarding. Pro only.
           </p>
         </div>
@@ -72,12 +72,12 @@ export function TunnelPassword({ tunnelName, passwordProtected }: TunnelPassword
           disabled={saving}
           className={cn(
             "relative h-6 w-11 rounded-full transition-colors",
-            enabled ? "bg-accent" : "bg-white/15"
+            enabled ? "bg-accent" : "bg-ink/15"
           )}
         >
           <span
             className={cn(
-              "absolute top-0.5 size-5 rounded-full bg-white transition-transform",
+              "absolute top-0.5 size-5 rounded-full bg-ink transition-transform",
               enabled ? "left-[22px]" : "left-0.5"
             )}
           />
@@ -88,7 +88,7 @@ export function TunnelPassword({ tunnelName, passwordProtected }: TunnelPassword
         <button
           type="button"
           onClick={() => openUpgrade("password-protection")}
-          className="mt-3 w-full rounded-lg border border-dashed border-white/10 px-3 py-2 text-left text-xs text-white/40 transition-colors hover:border-white/20 hover:text-white/55"
+          className="mt-3 w-full rounded-lg border border-dashed border-ink/10 px-3 py-2 text-left text-xs text-ink/40 transition-colors hover:border-ink/20 hover:text-ink/55"
         >
           Click to enable — opens Pro upgrade
         </button>
@@ -96,32 +96,32 @@ export function TunnelPassword({ tunnelName, passwordProtected }: TunnelPassword
 
       {isPro && enabled && (
         <div className="mt-4 space-y-2">
-          <label className="text-xs text-white/35">Tunnel password</label>
+          <label className="text-xs text-ink/35">Tunnel password</label>
           <div className="flex items-center gap-2">
             <input
               type={revealed ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Set a password for visitors"
-              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2 font-mono text-sm text-white outline-none focus:border-white/20"
+              className="min-w-0 flex-1 rounded-lg border border-ink/10 bg-dark/40 px-3 py-2 font-mono text-sm text-ink outline-none focus:border-accent/40"
             />
             <button
               type="button"
               onClick={() => setRevealed((v) => !v)}
-              className="rounded-lg bg-white/5 px-3 py-2 text-xs text-white/55 hover:bg-white/10"
+              className="rounded-lg bg-ink/5 px-3 py-2 text-xs text-ink/55 hover:bg-ink/10"
             >
               {revealed ? "Hide" : "Reveal"}
             </button>
             {password && <CopyButton value={password} label="Password copied" />}
           </div>
-          <p className="text-[11px] text-white/30">
+          <p className="text-[11px] text-ink/30">
             Reveal only when you need to copy — avoid screen-shares with this visible.
           </p>
           <button
             type="button"
             disabled={saving || !password}
             onClick={() => save(password)}
-            className="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/10 disabled:opacity-40"
+            className="rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-medium text-accent hover:bg-accent/25 disabled:opacity-40"
           >
             {saving ? "Saving…" : "Save password"}
           </button>
@@ -144,16 +144,16 @@ export function ProOverviewBanner() {
   if (isPro || dismissed) return null;
 
   return (
-    <div className="mx-6 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[#161616] px-4 py-3 text-sm">
-      <p className="text-white/50">
-        <span className="text-white/70">Client demo coming up?</span> Pro keeps your
+    <div className="mx-6 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/15 bg-accent/[0.04] px-4 py-3 text-sm">
+      <p className="text-ink/50">
+        <span className="text-ink/70">Client demo coming up?</span> Pro keeps your
         tunnel alive and lets you password-protect the link.
       </p>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => openUpgrade("general")}
-          className="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/25"
         >
           Upgrade to Pro
         </button>
@@ -163,7 +163,7 @@ export function ProOverviewBanner() {
             sessionStorage.setItem("helix_pro_banner_dismissed", "1");
             setDismissed(true);
           }}
-          className="text-xs text-white/30 hover:text-white/50"
+          className="text-xs text-ink/30 hover:text-ink/50"
         >
           Dismiss
         </button>

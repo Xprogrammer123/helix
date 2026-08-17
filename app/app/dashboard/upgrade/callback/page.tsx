@@ -6,7 +6,7 @@ export default function UpgradeCallbackPage() {
     <Suspense
       fallback={
         <div className="flex h-full items-center justify-center">
-          <span className="size-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+          <span className="size-6 animate-spin rounded-full border-2 border-ink/20 border-t-accent" />
         </div>
       }
     >

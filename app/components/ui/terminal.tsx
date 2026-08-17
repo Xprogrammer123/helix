@@ -274,15 +274,15 @@ export const Terminal = ({
     <div
       ref={containerRef}
       className={cn(
-        "z-0 h-full max-h-100 w-full max-w-lg overflow-hidden rounded-xl border border-white/10 bg-[#0f0f0f]",
+        "z-0 h-full max-h-100 w-full max-w-lg overflow-hidden rounded-xl border border-accent/15 bg-dark",
         className
       )}
     >
-      <div className="flex flex-col gap-y-0.5 border-b border-white/8 p-4">
+      <div className="flex flex-col gap-y-0.5 border-b border-ink/8 p-4">
         <div className="flex flex-row gap-x-2">
           <div className="h-2 w-2 rounded-full bg-red-500" />
           <div className="h-2 w-2 rounded-full bg-yellow-500" />
-          <div className="h-2 w-2 rounded-full bg-white/40" />
+          <div className="h-2 w-2 rounded-full bg-accent/50" />
         </div>
       </div>
       <pre className="scrollbar-none overflow-auto p-4">

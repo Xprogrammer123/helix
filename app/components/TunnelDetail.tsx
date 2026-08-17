@@ -57,10 +57,10 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
 
   return (
     <div className="scrollbar-none flex h-full flex-col overflow-auto">
-      <div className="border-b border-white/5 px-6 pt-5 pb-5">
+      <div className="border-b border-ink/8 px-6 pt-5 pb-5">
         <Link
           href="/dashboard/tunnels"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-ink/40 transition-colors hover:text-ink/70"
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} size={14} color="currentColor" />
           Tunnels
@@ -69,7 +69,7 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
-              <h1 className="truncate text-2xl font-semibold tracking-tight text-white">
+              <h1 className="truncate font-display text-2xl font-bold tracking-tight text-ink">
                 {name}
               </h1>
               <span
@@ -77,13 +77,13 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
                   "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
                   tunnel?.live
                     ? "bg-accent/15 text-accent"
-                    : "bg-white/5 text-white/40"
+                    : "bg-ink/5 text-ink/40"
                 )}
               >
                 <span
                   className={cn(
                     "size-1.5 rounded-full",
-                    tunnel?.live ? "bg-accent" : "bg-white/30"
+                    tunnel?.live ? "bg-accent" : "bg-ink/30"
                   )}
                 />
                 {tunnel ? (tunnel.live ? "Live" : "Offline") : "…"}
@@ -95,9 +95,9 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
                 icon={Link01Icon}
                 size={14}
                 color="currentColor"
-                className="text-white/35"
+                className="text-ink/35"
               />
-              <code className="truncate font-mono text-sm text-white/50">
+              <code className="truncate font-mono text-sm text-ink/50">
                 {url}
               </code>
               <CopyButton value={url} label="URL copied" />
@@ -109,8 +109,8 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
             />
           </div>
 
-          <div className="text-right text-sm text-white/35">
-            <div className="font-mono text-lg tabular-nums text-white/70">
+          <div className="text-right text-sm text-ink/35">
+            <div className="font-mono text-lg tabular-nums text-ink/70">
               {tunnel?.requestCount ?? "—"}
             </div>
             <div>total requests</div>
@@ -129,8 +129,8 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
       </div>
 
       <div className="px-6 pt-5 pb-2">
-        <h2 className="text-sm font-medium text-white/50">Recent requests</h2>
-        <p className="mt-0.5 text-xs text-white/30">
+        <h2 className="text-sm font-medium text-ink/50">Recent requests</h2>
+        <p className="mt-0.5 text-xs text-ink/30">
           Polling every 3s · newest first
           {tunnelMeta?.isPro ? " · up to 500" : " · max 50 on Free"}
         </p>

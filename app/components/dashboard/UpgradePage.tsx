@@ -31,19 +31,19 @@ export function UpgradePage() {
 
   return (
     <div className="scrollbar-none flex h-full flex-col overflow-auto">
-      <div className="border-b border-white/5 px-6 py-8">
+      <div className="border-b border-ink/8 px-6 py-8">
         <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
           <HugeiconsIcon icon={SparklesIcon} size={14} color="currentColor" />
           Helix Pro
         </div>
-        <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-white">
+        <h1 className="font-display mt-4 max-w-2xl text-3xl font-bold tracking-tight text-ink">
           Demo links that survive the meeting. Tunnels that don&apos;t fight each other.
         </h1>
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/45">
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/45">
           Pro is built for the moments you actually need a tunnel — client demos,
           webhook testing, and debugging sessions that run longer than two minutes.
         </p>
-        <p className="mt-6 font-mono text-2xl font-semibold text-white">
+        <p className="mt-6 font-mono text-2xl font-semibold text-ink">
           {PRO_PRICE_LABEL}
         </p>
         <button
@@ -51,7 +51,7 @@ export function UpgradePage() {
           disabled={loading}
           onClick={startCheckout}
           className={cn(
-            "mt-4 rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-black transition-opacity",
+            "mt-4 rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-dark transition-opacity",
             loading ? "opacity-60" : "hover:opacity-90"
           )}
         >
@@ -80,10 +80,10 @@ export function UpgradePage() {
         />
       </div>
 
-      <div className="border-t border-white/5 px-6 py-6">
+      <div className="border-t border-ink/8 px-6 py-6">
         <Link
           href="/dashboard/settings"
-          className="text-sm text-white/40 transition-colors hover:text-white/70"
+          className="text-sm text-ink/40 transition-colors hover:text-ink/70"
         >
           Already upgraded? View billing status →
         </Link>
@@ -111,15 +111,15 @@ function UseCaseCard({
         "rounded-2xl border p-6",
         featured
           ? "border-accent/20 bg-accent/[0.04]"
-          : "border-white/[0.06] bg-[#1a1a1a]",
+          : "border-ink/8 bg-panel",
         className
       )}
     >
-      <div className="mb-4 flex size-9 items-center justify-center rounded-lg bg-white/10 text-white">
+      <div className="mb-4 flex size-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
         <HugeiconsIcon icon={icon} size={18} color="currentColor" />
       </div>
-      <h2 className="text-[15px] font-medium text-white">{title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-white/40">{body}</p>
+      <h2 className="text-[15px] font-medium text-ink">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-ink/40">{body}</p>
     </div>
   );
 }

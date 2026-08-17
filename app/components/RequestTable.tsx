@@ -12,13 +12,13 @@ function statusColor(status: number) {
   if (status >= 200 && status < 300) return "text-accent";
   if (status >= 400 && status < 500) return "text-amber-400";
   if (status >= 500) return "text-red-400";
-  return "text-white/50";
+  return "text-ink/50";
 }
 
 function methodColor(method: string) {
   switch (method.toUpperCase()) {
     case "GET":
-      return "text-white/50 bg-white/10";
+      return "text-ink/50 bg-ink/10";
     case "POST":
       return "text-accent bg-accent/10";
     case "PUT":
@@ -27,7 +27,7 @@ function methodColor(method: string) {
     case "DELETE":
       return "text-red-400 bg-red-400/10";
     default:
-      return "text-white/60 bg-white/5";
+      return "text-ink/60 bg-ink/5";
   }
 }
 
@@ -48,11 +48,11 @@ function RequestRow({ req }: { req: TunnelRequest }) {
   const id = req.$id ?? `${req.timestamp}-${req.method}-${req.path}`;
 
   return (
-    <div className="border-b border-white/[0.06]">
+    <div className="border-b border-ink/8">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 px-6 py-3 text-left transition-colors hover:bg-white/[0.03]"
+        className="flex w-full items-center gap-3 px-6 py-3 text-left transition-colors hover:bg-ink/[0.03]"
       >
         <span
           className={cn(
@@ -62,7 +62,7 @@ function RequestRow({ req }: { req: TunnelRequest }) {
         >
           {req.method}
         </span>
-        <span className="min-w-0 flex-1 truncate font-mono text-sm text-white/85">
+        <span className="min-w-0 flex-1 truncate font-mono text-sm text-ink/85">
           {req.path}
         </span>
         <span
@@ -73,10 +73,10 @@ function RequestRow({ req }: { req: TunnelRequest }) {
         >
           {req.status}
         </span>
-        <span className="w-16 shrink-0 text-right font-mono text-xs tabular-nums text-white/40">
+        <span className="w-16 shrink-0 text-right font-mono text-xs tabular-nums text-ink/40">
           {req.duration_ms}ms
         </span>
-        <span className="w-20 shrink-0 text-right font-mono text-xs text-white/35">
+        <span className="w-20 shrink-0 text-right font-mono text-xs text-ink/35">
           {formatTime(req.timestamp)}
         </span>
         <HugeiconsIcon
@@ -84,7 +84,7 @@ function RequestRow({ req }: { req: TunnelRequest }) {
           size={14}
           color="currentColor"
           strokeWidth={2}
-          className="shrink-0 text-white/30"
+          className="shrink-0 text-ink/30"
         />
       </button>
       <AnimatePresence initial={false}>
@@ -97,30 +97,30 @@ function RequestRow({ req }: { req: TunnelRequest }) {
             transition={{ duration: 0.18 }}
             className="overflow-hidden"
           >
-            <div className="grid grid-cols-2 gap-3 bg-[#1a1a1a] px-6 py-4 text-xs sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 bg-panel px-6 py-4 text-xs sm:grid-cols-4">
               <div>
-                <p className="text-white/35">Method</p>
-                <p className="mt-1 font-mono text-white/80">{req.method}</p>
+                <p className="text-ink/35">Method</p>
+                <p className="mt-1 font-mono text-ink/80">{req.method}</p>
               </div>
               <div>
-                <p className="text-white/35">Status</p>
+                <p className="text-ink/35">Status</p>
                 <p className={cn("mt-1 font-mono", statusColor(req.status))}>
                   {req.status}
                 </p>
               </div>
               <div>
-                <p className="text-white/35">Duration</p>
-                <p className="mt-1 font-mono text-white/80">{req.duration_ms}ms</p>
+                <p className="text-ink/35">Duration</p>
+                <p className="mt-1 font-mono text-ink/80">{req.duration_ms}ms</p>
               </div>
               <div>
-                <p className="text-white/35">Timestamp</p>
-                <p className="mt-1 font-mono text-white/80">
+                <p className="text-ink/35">Timestamp</p>
+                <p className="mt-1 font-mono text-ink/80">
                   {new Date(req.timestamp).toLocaleString()}
                 </p>
               </div>
               <div className="col-span-2 sm:col-span-4">
-                <p className="text-white/35">Path</p>
-                <p className="mt-1 break-all font-mono text-white/80">{req.path}</p>
+                <p className="text-ink/35">Path</p>
+                <p className="mt-1 break-all font-mono text-ink/80">{req.path}</p>
               </div>
             </div>
           </motion.div>
@@ -175,7 +175,7 @@ export function RequestTable({ name }: { name: string }) {
   if (requests === null) {
     return (
       <div className="flex flex-1 items-center justify-center px-6 py-12">
-        <span className="size-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+        <span className="size-5 animate-spin rounded-full border-2 border-ink/20 border-t-accent" />
       </div>
     );
   }
@@ -183,8 +183,8 @@ export function RequestTable({ name }: { name: string }) {
   if (requests.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-16">
-        <p className="text-sm text-white/45">No requests yet.</p>
-        <p className="font-mono text-xs text-white/30">
+        <p className="text-sm text-ink/45">No requests yet.</p>
+        <p className="font-mono text-xs text-ink/30">
           Hit your tunnel URL to see traffic here.
         </p>
       </div>
@@ -193,7 +193,7 @@ export function RequestTable({ name }: { name: string }) {
 
   return (
     <div>
-      <div className="flex items-center gap-3 border-b border-white/[0.06] px-6 py-2 text-[11px] font-medium uppercase tracking-wide text-white/30">
+      <div className="flex items-center gap-3 border-b border-ink/8 px-6 py-2 text-[11px] font-medium uppercase tracking-wide text-ink/30">
         <span className="w-14">Method</span>
         <span className="flex-1">Path</span>
         <span className="w-10 text-right">Status</span>
@@ -209,13 +209,13 @@ export function RequestTable({ name }: { name: string }) {
       ))}
 
       {meta?.capped && !meta.isPro && (
-        <div className="border-t border-white/[0.06] px-6 py-4">
-          <p className="text-xs text-white/35">
+        <div className="border-t border-ink/8 px-6 py-4">
+          <p className="text-xs text-ink/35">
             Showing the latest {meta.limit} of {meta.total} requests.{" "}
             <button
               type="button"
               onClick={() => openUpgrade("full-history")}
-              className="text-white/55 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/75"
+              className="text-accent/80 underline decoration-accent/30 underline-offset-2 transition-colors hover:text-accent"
             >
               Upgrade for full history
             </button>

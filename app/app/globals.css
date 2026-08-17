@@ -8,8 +8,6 @@
   --color-accent-dim: #2a9a6a;
   --color-ink: #eaf8f0;
   --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display), "Google Sans", sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, "Cascadia Code", Menlo, monospace;
 }
 
 @font-face {
