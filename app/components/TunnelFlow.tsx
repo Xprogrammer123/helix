@@ -29,14 +29,14 @@ function Node({
       className={cn(
         "relative z-10 flex w-36 flex-col items-center gap-3 rounded-2xl border px-4 py-5 sm:w-44",
         highlight
-          ? "border-accent/40 bg-accent/10 shadow-[0_0_40px_-12px_rgba(92,255,177,0.55)]"
+          ? "border-white/25 bg-white/5 shadow-[0_0_40px_-12px_rgba(255,255,255,0.35)]"
           : "border-ink/10 bg-surface/90"
       )}
     >
       <div
         className={cn(
           "flex size-11 items-center justify-center rounded-xl",
-          highlight ? "bg-accent text-dark" : "bg-ink/5 text-accent"
+          highlight ? "bg-white text-dark" : "bg-ink/5 text-white"
         )}
       >
         <HugeiconsIcon icon={icon} size={20} color="currentColor" />
@@ -81,9 +81,9 @@ export function TunnelFlow() {
         toRef={relayRef}
         curvature={-22}
         duration={3}
-        pathColor="rgba(92,255,177,0.15)"
-        gradientStartColor="#5cffb1"
-        gradientStopColor="#2a9a6a"
+        pathColor="rgba(255,255,255,0.12)"
+        gradientStartColor="#ffffff"
+        gradientStopColor="rgba(255,255,255,0.45)"
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -93,9 +93,9 @@ export function TunnelFlow() {
         duration={3}
         delay={0.5}
         reverse
-        pathColor="rgba(92,255,177,0.15)"
-        gradientStartColor="#5cffb1"
-        gradientStopColor="#2a9a6a"
+        pathColor="rgba(255,255,255,0.12)"
+        gradientStartColor="#ffffff"
+        gradientStopColor="rgba(255,255,255,0.45)"
       />
     </div>
   );

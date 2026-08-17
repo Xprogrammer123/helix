@@ -4,9 +4,9 @@
   --color-dark: #07080a;
   --color-surface: #0e1114;
   --color-panel: #14181c;
-  --color-accent: #5cffb1;
-  --color-accent-dim: #2a9a6a;
-  --color-ink: #eaf8f0;
+  --color-accent: #ffffff;
+  --color-accent-dim: rgba(255, 255, 255, 0.45);
+  --color-ink: #ffffff;
   --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
 }
 

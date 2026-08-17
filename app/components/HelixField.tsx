@@ -25,8 +25,8 @@ export function HelixField({
         className={cn(
           "absolute inset-0",
           strong
-            ? "bg-[radial-gradient(ellipse_90%_55%_at_50%_-5%,rgba(92,255,177,0.18),transparent_55%),radial-gradient(ellipse_50%_40%_at_85%_30%,rgba(92,255,177,0.08),transparent),radial-gradient(ellipse_40%_50%_at_10%_70%,rgba(42,154,106,0.12),transparent)]"
-            : "bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(92,255,177,0.08),transparent_60%)]"
+            ? "bg-[radial-gradient(ellipse_90%_55%_at_50%_-5%,rgba(255,255,255,0.14),transparent_55%),radial-gradient(ellipse_50%_40%_at_85%_30%,rgba(255,255,255,0.06),transparent),radial-gradient(ellipse_40%_50%_at_10%_70%,rgba(255,255,255,0.08),transparent)]"
+            : "bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]"
         )}
       />
 
@@ -36,7 +36,7 @@ export function HelixField({
           {[0.18, 0.28, 0.4, 0.55, 0.72, 0.9].map((scale, i) => (
             <div
               key={scale}
-              className="absolute top-1/2 left-1/2 rounded-full border border-accent/15"
+              className="absolute top-1/2 left-1/2 rounded-full border border-white/10"
               style={{
                 width: `${scale * 100}%`,
                 height: `${scale * 62}%`,
@@ -57,10 +57,10 @@ export function HelixField({
       >
         <defs>
           <linearGradient id="helix-stroke" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#5cffb1" stopOpacity="0" />
-            <stop offset="35%" stopColor="#5cffb1" stopOpacity="0.85" />
-            <stop offset="65%" stopColor="#5cffb1" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#5cffb1" stopOpacity="0" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="65%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
           <filter id="helix-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />

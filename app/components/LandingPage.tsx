@@ -111,8 +111,8 @@ export function LandingPage() {
                     size={90}
                     duration={7}
                     borderWidth={1}
-                    colorFrom="#5cffb1"
-                    colorTo="rgba(92,255,177,0.15)"
+                    colorFrom="#ffffff"
+                    colorTo="rgba(255,255,255,0.15)"
                   />
                   <HugeiconsIcon
                     icon={TerminalIcon}
@@ -180,7 +180,7 @@ export function LandingPage() {
                   size={140}
                   duration={10}
                   borderWidth={1}
-                  colorFrom="#5cffb1"
+                  colorFrom="#ffffff"
                   colorTo="transparent"
                 />
                 <Terminal className="max-h-none max-w-none rounded-3xl border-0 bg-transparent [&_pre]:p-6 sm:[&_pre]:p-8">
@@ -227,7 +227,7 @@ export function LandingPage() {
                   transition={{ delay: i * 0.05 }}
                   className="group grid gap-4 py-8 sm:grid-cols-[3rem_1fr_1.2fr] sm:items-center"
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full border border-accent/25 bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-dark">
+                  <div className="flex size-10 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-colors group-hover:bg-white group-hover:text-dark">
                     <HugeiconsIcon icon={f.icon} size={18} color="currentColor" />
                   </div>
                   <h3 className="font-display text-xl font-semibold text-ink">
@@ -319,8 +319,8 @@ export function LandingPage() {
                     size={100}
                     duration={9}
                     borderWidth={1}
-                    colorFrom="#5cffb1"
-                    colorTo="rgba(92,255,177,0.2)"
+                    colorFrom="#ffffff"
+                    colorTo="rgba(255,255,255,0.2)"
                   />
                   <p className="text-sm text-accent">Pro</p>
                   <p className="font-display mt-2 text-4xl font-bold text-ink">
@@ -372,8 +372,8 @@ export function LandingPage() {
                   size={70}
                   duration={8}
                   borderWidth={1}
-                  colorFrom="#5cffb1"
-                  colorTo="rgba(92,255,177,0.2)"
+                  colorFrom="#ffffff"
+                  colorTo="rgba(255,255,255,0.2)"
                 />
                 <code className="font-mono text-sm text-ink">{INSTALL}</code>
                 <CopyButton value={INSTALL} label="Install command copied" />
