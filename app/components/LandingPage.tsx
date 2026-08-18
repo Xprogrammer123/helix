@@ -57,32 +57,34 @@ const steps = [
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-dark text-ink">
-      <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
-          HELIX
-        </Link>
-        <nav className="flex items-center gap-6 text-sm text-ink/45">
-          <Link href="/docs" className="transition-colors hover:text-ink">
-            Docs
+      <header className="fixed top-0 z-20 w-full border-b border-white/10 bg-dark/70 backdrop-blur-xl backdrop-saturate-150">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
+            HELIX
           </Link>
-          <a
-            href={GITHUB}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-ink"
-          >
-            GitHub
-          </a>
-          <Link
-            href="/auth"
-            className="rounded-full bg-accent px-4 py-1.5 font-medium text-dark transition-opacity hover:opacity-90"
-          >
-            Open app
-          </Link>
-        </nav>
+          <nav className="flex items-center gap-6 text-sm text-ink/45">
+            <Link href="/docs" className="transition-colors hover:text-ink">
+              Docs
+            </Link>
+            <a
+              href={GITHUB}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-ink"
+            >
+              GitHub
+            </a>
+            <Link
+              href="/auth"
+              className="rounded-full bg-accent px-4 py-1.5 font-medium text-dark transition-opacity hover:opacity-90"
+            >
+              Open app
+            </Link>
+          </nav>
+        </div>
       </header>
 
-      <main className="relative z-10">
+      <main className="relative z-10 pt-[4.5rem]">
         {/* Hero — one composition: brand + line + CTA + full-bleed field */}
         <section className="relative flex min-h-[calc(100vh-4.5rem)] flex-col justify-end overflow-hidden pb-16 pt-10 sm:justify-center sm:pb-24">
           <HelixField intensity="hero" />

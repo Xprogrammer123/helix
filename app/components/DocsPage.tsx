@@ -38,7 +38,7 @@ export function DocsPage() {
     <div className="relative min-h-screen overflow-x-hidden bg-dark text-ink">
       <HelixField intensity="soft" className="fixed opacity-50" />
 
-      <header className="fixed top-0 z-20 w-screen border-b border-ink/8 bg-dark/80 backdrop-blur-md">
+      <header className="fixed top-0 z-20 w-full border-b border-white/10 bg-dark/70 backdrop-blur-xl backdrop-saturate-150">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="font-display text-lg font-bold tracking-tight">
