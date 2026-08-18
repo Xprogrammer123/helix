@@ -57,7 +57,7 @@ const steps = [
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-dark text-ink">
-      <header className="fixed top-0 left-1/2 z-20 mt-3 w-[70%] -translate-x-1/2 rounded-full border border-white/10 bg-dark/70 px-6 py-3 backdrop-blur-xl backdrop-saturate-150">
+      <header className="fixed top-0 left-1/2 z-20 mt-3 w-[70%] -translate-x-1/2 rounded-full border border-white/10 px-6 py-3 backdrop-blur-xl backdrop-saturate-150">
         <div className="flex items-center justify-between">
           <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
             HELIX
