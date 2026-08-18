@@ -251,10 +251,9 @@ wss.on('connection', async (ws, req) => {
   });
 
   const existingWs = tunnels.get(name);
-  if (existingWs && existingWs !== ws) existingWs.terminate();
-
   tunnels.set(name, ws);
   lastSeen.set(name, Date.now());
+  if (existingWs && existingWs !== ws) existingWs.terminate();
   publish(user.$id, { type: 'tunnel.live', name });
   console.log(`[relay] registered: ${name} (user: ${user.username})`);
 

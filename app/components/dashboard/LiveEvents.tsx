@@ -31,12 +31,6 @@ export function LiveEventsProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    es.onerror = () => {
-      if (es.readyState === EventSource.CLOSED) {
-        window.location.href = "/auth";
-      }
-    };
-
     return () => es.close();
   }, []);
 

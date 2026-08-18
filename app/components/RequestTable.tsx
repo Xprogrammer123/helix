@@ -5,6 +5,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePlan } from "@/components/dashboard/PlanContext";
+import { useLiveEvent } from "@/components/dashboard/LiveEvents";
+import { prependRequest } from "@/lib/live-events";
 import type { RequestsResponse, TunnelRequest } from "@/lib/relay";
 import { cn } from "@/lib/utils";
 
@@ -160,9 +162,19 @@ export function RequestTable({ name }: { name: string }) {
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 3000);
-    return () => clearInterval(id);
   }, [load]);
+
+  useLiveEvent((event) => {
+    if (event.type !== "request") return;
+    if (event.request.tunnel_name !== name) return;
+    setRequests((prev) => {
+      if (!prev) return prev;
+      return prependRequest(prev, event.request, meta?.limit ?? 50);
+    });
+    setMeta((prev) =>
+      prev ? { ...prev, total: prev.total + 1 } : prev
+    );
+  });
 
   if (error && !requests) {
     return (
