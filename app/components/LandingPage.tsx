@@ -84,9 +84,9 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="relative z-10 pt-20">
+      <main className="relative z-10">
         {/* Hero — one composition: brand + line + CTA + full-bleed field */}
-        <section className="relative flex min-h-[calc(100vh-4.5rem)] flex-col justify-end overflow-hidden pb-16 pt-10 sm:justify-center sm:pb-24">
+        <section className="relative flex min-h-screen flex-col justify-end overflow-hidden pb-16 pt-24 sm:justify-center sm:pb-24">
           <HelixField intensity="hero" />
 
           <div className="relative z-10 mx-auto w-full max-w-6xl px-6">
