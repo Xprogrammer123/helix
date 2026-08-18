@@ -57,8 +57,8 @@ const steps = [
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-dark text-ink">
-      <header className="fixed top-0 z-20 w-full border-b border-white/10 bg-dark/70 backdrop-blur-xl backdrop-saturate-150">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+      <header className="fixed top-0 left-1/2 z-20 mt-3 w-[70%] -translate-x-1/2 rounded-full border border-white/10 bg-dark/70 px-6 py-3 backdrop-blur-xl backdrop-saturate-150">
+        <div className="flex items-center justify-between">
           <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
             HELIX
           </Link>
@@ -84,7 +84,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="relative z-10 pt-[4.5rem]">
+      <main className="relative z-10 pt-20">
         {/* Hero — one composition: brand + line + CTA + full-bleed field */}
         <section className="relative flex min-h-[calc(100vh-4.5rem)] flex-col justify-end overflow-hidden pb-16 pt-10 sm:justify-center sm:pb-24">
           <HelixField intensity="hero" />
