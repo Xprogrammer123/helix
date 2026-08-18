@@ -28,6 +28,7 @@ function prompt(question: string): Promise<string> {
 }
 
 export async function login(): Promise<{ token: string; username: string }> {
+  console.log(`[client] relay ${RELAY_HTTP}`);
   const email = await prompt("Email: ");
   if (!email) throw new Error("Email is required");
 
