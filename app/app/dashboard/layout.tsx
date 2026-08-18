@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { PlanProvider } from "@/components/dashboard/PlanContext";
+import { LiveEventsProvider } from "@/components/dashboard/LiveEvents";
 import { getSessionToken } from "@/lib/auth-server";
 import { relayFetch, type UserProfile } from "@/lib/relay-server";
 
@@ -17,12 +18,14 @@ export default async function DashboardLayout({
 
   return (
     <PlanProvider initialUser={initialUser}>
-      <div className="flex h-screen w-screen bg-dark p-3 text-ink">
-        <Sidebar user={initialUser} />
-        <main className="scrollbar-none flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-ink/8 bg-surface">
-          {children}
-        </main>
-      </div>
+      <LiveEventsProvider>
+        <div className="flex h-screen w-screen bg-dark p-3 text-ink">
+          <Sidebar user={initialUser} />
+          <main className="scrollbar-none flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-ink/8 bg-surface">
+            {children}
+          </main>
+        </div>
+      </LiveEventsProvider>
     </PlanProvider>
   );
 }

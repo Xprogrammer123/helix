@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { Tunnel, TunnelsResponse } from "@/lib/relay";
+import { useLiveTunnels } from "@/hooks/useLiveTunnels";
 import { TunnelRow } from "@/components/TunnelRow";
 import { CopyButton } from "@/components/CopyButton";
 
@@ -12,35 +11,7 @@ type TunnelListProps = {
 };
 
 export function TunnelList({ publicBase }: TunnelListProps) {
-  const [tunnels, setTunnels] = useState<Tunnel[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/tunnels");
-      if (res.status === 401) {
-        window.location.href = "/auth";
-        return;
-      }
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error ?? "Failed to load tunnels");
-      }
-      const data = (await res.json()) as TunnelsResponse;
-      setTunnels(data.tunnels);
-      setError(null);
-    } catch (err) {
-      // Keep last good snapshot on transient relay/Appwrite blips
-      setError(err instanceof Error ? err.message : "Failed to load tunnels");
-      setTunnels((prev) => prev ?? null);
-    }
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 4000);
-    return () => clearInterval(id);
-  }, [load]);
+  const { tunnels, error } = useLiveTunnels();
 
   if (error && tunnels === null) {
     return (

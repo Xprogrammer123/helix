@@ -39,6 +39,7 @@ import {
   upgradeHint,
   freeTierTip,
 } from './config.js';
+import { publish, subscribeDashboard } from './events.js';
 
 function rewriteHtml(body: string, name: string): string {
   const prefix = `/tunnel/${name}`;
@@ -53,6 +54,15 @@ function rewriteHtml(body: string, name: string): string {
     : swScript + rewritten;
 
   return rewritten;
+}
+
+function unregisterTunnel(name: string, ws?: WebSocket) {
+  if (ws && tunnels.get(name) !== ws) return;
+  const meta = tunnelMeta.get(name);
+  tunnels.delete(name);
+  lastSeen.delete(name);
+  tunnelMeta.delete(name);
+  if (meta) publish(meta.userId, { type: 'tunnel.offline', name });
 }
 
 function countActiveTunnelsForUser(userId: string, excludeName?: string): number {
@@ -245,6 +255,7 @@ wss.on('connection', async (ws, req) => {
 
   tunnels.set(name, ws);
   lastSeen.set(name, Date.now());
+  publish(user.$id, { type: 'tunnel.live', name });
   console.log(`[relay] registered: ${name} (user: ${user.username})`);
 
   ws.send(
@@ -281,11 +292,7 @@ wss.on('connection', async (ws, req) => {
   });
 
   ws.on('close', () => {
-    if (tunnels.get(name) === ws) {
-      tunnels.delete(name);
-      lastSeen.delete(name);
-      tunnelMeta.delete(name);
-    }
+    unregisterTunnel(name, ws);
     console.log(`[relay] closed: ${name}`);
   });
 });
@@ -295,10 +302,9 @@ setInterval(() => {
   for (const [name, ts] of lastSeen.entries()) {
     const ttl = tunnelMeta.get(name)?.idleTtlMs ?? 120_000;
     if (now - ts > ttl) {
-      tunnels.get(name)?.terminate();
-      tunnels.delete(name);
-      lastSeen.delete(name);
-      tunnelMeta.delete(name);
+      const dead = tunnels.get(name);
+      unregisterTunnel(name, dead);
+      dead?.terminate();
       console.log(`[relay] swept dead tunnel: ${name}`);
     }
   }
@@ -367,13 +373,25 @@ app.use('/tunnel/:name', async (req: Request, res: Response) => {
       }
       res.send(bodyBuffer);
 
-      db.createDocument(DB_ID, 'requests', ID.unique(), {
+      const requestLog = {
+        $id: ID.unique(),
         tunnel_name: name,
         method: req.method,
         path,
         status: msg.status || 200,
         duration_ms: Date.now() - startedAt,
         timestamp: new Date().toISOString(),
+      };
+
+      if (meta) publish(meta.userId, { type: 'request', request: requestLog });
+
+      db.createDocument(DB_ID, 'requests', requestLog.$id, {
+        tunnel_name: requestLog.tunnel_name,
+        method: requestLog.method,
+        path: requestLog.path,
+        status: requestLog.status,
+        duration_ms: requestLog.duration_ms,
+        timestamp: requestLog.timestamp,
       }).catch((err) => console.error('[relay] failed to log request:', err));
     });
 
@@ -421,6 +439,37 @@ app.post('/api/auth/cli/verify', async (req, res) => {
     console.error('[relay] cli verify error:', err);
     res.status(401).json({ error: 'Invalid or expired code' });
   }
+});
+
+app.get('/api/events', async (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  const user = await resolveUserFromAuth(token);
+  if (!user) return res.status(401).json({ error: 'Invalid token' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders?.();
+  res.write(': connected\n\n');
+
+  subscribeDashboard(user.$id, res);
+
+  const ping = setInterval(() => {
+    if (res.writableEnded) {
+      clearInterval(ping);
+      return;
+    }
+    try {
+      res.write(': ping\n\n');
+    } catch {
+      clearInterval(ping);
+    }
+  }, 15_000);
+
+  req.on('close', () => clearInterval(ping));
 });
 
 app.get('/api/me', async (req, res) => {

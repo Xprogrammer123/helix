@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -13,7 +13,7 @@ import {
   WebhookIcon,
 } from "@hugeicons/core-free-icons";
 import { usePlan } from "@/components/dashboard/PlanContext";
-import type { Tunnel, TunnelsResponse } from "@/lib/relay";
+import { useLiveTunnels } from "@/hooks/useLiveTunnels";
 import { CopyButton } from "@/components/CopyButton";
 import { cn } from "@/lib/utils";
 
@@ -24,41 +24,8 @@ type DashboardHomeProps = {
 };
 
 export function DashboardHome({ publicBase }: DashboardHomeProps) {
-  const [tunnels, setTunnels] = useState<Tunnel[] | null>(null);
-  const [tunnelMeta, setTunnelMeta] = useState<Pick<TunnelsResponse, "liveCount" | "tunnelLimit" | "isPro"> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { tunnels, tunnelMeta, error } = useLiveTunnels();
   const { openUpgrade } = usePlan();
-
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/tunnels");
-      if (res.status === 401) {
-        window.location.href = "/auth";
-        return;
-      }
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error ?? "Failed to load");
-      }
-      const data = (await res.json()) as TunnelsResponse;
-      setTunnels(data.tunnels);
-      setTunnelMeta({
-        liveCount: data.liveCount,
-        tunnelLimit: data.tunnelLimit,
-        isPro: data.isPro,
-      });
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load");
-      setTunnels((prev) => prev ?? null);
-    }
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 4000);
-    return () => clearInterval(id);
-  }, [load]);
 
   const stats = useMemo(() => {
     if (!tunnels) return null;
@@ -107,7 +74,7 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
             Overview
           </h1>
           <p className="mt-1 text-sm text-ink/40">
-            Live snapshot of your relay — updates every few seconds.
+            Live snapshot of your relay — updates as traffic hits.
           </p>
         </div>
         <div className="flex items-center gap-2">

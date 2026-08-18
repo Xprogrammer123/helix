@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, Link01Icon } from "@hugeicons/core-free-icons";
 import { usePlan } from "@/components/dashboard/PlanContext";
 import { ProCallout } from "@/components/dashboard/UpgradeModal";
 import { TunnelPassword } from "@/components/dashboard/TunnelPassword";
-import type { Tunnel, TunnelsResponse } from "@/lib/relay";
+import { useLiveTunnels } from "@/hooks/useLiveTunnels";
 import { CopyButton } from "@/components/CopyButton";
 import { RequestTable } from "@/components/RequestTable";
 import { cn } from "@/lib/utils";
@@ -18,42 +18,14 @@ type TunnelDetailProps = {
 };
 
 export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
-  const [tunnel, setTunnel] = useState<Tunnel | null>(null);
-  const [tunnelMeta, setTunnelMeta] = useState<Pick<TunnelsResponse, "liveCount" | "tunnelLimit" | "isPro"> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { tunnels, tunnelMeta, error } = useLiveTunnels();
   const { openUpgrade } = usePlan();
+  const tunnel = useMemo(
+    () => tunnels?.find((t) => t.name === name) ?? null,
+    [tunnels, name]
+  );
 
   const url = `${publicBase.replace(/\/$/, "")}/tunnel/${name}/`;
-
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/tunnels");
-      if (res.status === 401) {
-        window.location.href = "/auth";
-        return;
-      }
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error ?? "Failed to load tunnel");
-      }
-      const data = (await res.json()) as TunnelsResponse;
-      setTunnel(data.tunnels.find((t) => t.name === name) ?? null);
-      setTunnelMeta({
-        liveCount: data.liveCount,
-        tunnelLimit: data.tunnelLimit,
-        isPro: data.isPro,
-      });
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load");
-    }
-  }, [name]);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 4000);
-    return () => clearInterval(id);
-  }, [load]);
 
   return (
     <div className="scrollbar-none flex h-full flex-col overflow-auto">
@@ -131,7 +103,7 @@ export function TunnelDetail({ name, publicBase }: TunnelDetailProps) {
       <div className="px-6 pt-5 pb-2">
         <h2 className="text-sm font-medium text-ink/50">Recent requests</h2>
         <p className="mt-0.5 text-xs text-ink/30">
-          Polling every 3s · newest first
+          Streaming live · newest first
           {tunnelMeta?.isPro ? " · up to 500" : " · max 50 on Free"}
         </p>
       </div>
