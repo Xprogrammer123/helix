@@ -21,7 +21,7 @@ import {
   TypingAnimation,
 } from "@/components/ui/terminal";
 
-const INSTALL = "npm install -g helix";
+const INSTALL = "npm install -g helix01";
 const GITHUB = "https://github.com/thatcreativetayo/helix";
 
 const features = [
