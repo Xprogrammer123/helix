@@ -1,6 +1,6 @@
 import { createOAuthProvider } from "@radonsdk/auth/pro/oauth";
 import type { OAuthProvider } from "@radonsdk/auth/pro/oauth";
-import { APP_URL } from "./urls";
+import { getAppUrl } from "./urls";
 import { ensureAuthReady } from "./radon";
 
 let githubProvider: OAuthProvider | null | undefined;
@@ -37,7 +37,7 @@ export async function getGithubProvider() {
     engine: auth.engine,
     clientId,
     clientSecret,
-    redirectUri: `${APP_URL.replace(/\/$/, "")}/api/auth/github/callback`,
+    redirectUri: `${getAppUrl()}/api/auth/github/callback`,
   });
 
   return githubProvider;

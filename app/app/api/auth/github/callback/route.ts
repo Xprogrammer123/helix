@@ -24,7 +24,8 @@ export async function GET(request: Request) {
     const auth = await ensureAuthReady();
     const { user } = await github.handleCallback({ code });
     return sessionResponse(auth, user.id, new URL("/dashboard", request.url).toString());
-  } catch {
+  } catch (err) {
+    console.error("[auth/github/callback]", err);
     return Response.redirect(
       new URL("/auth?error=auth_failed", request.url),
       302
