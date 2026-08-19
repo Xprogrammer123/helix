@@ -80,8 +80,8 @@ export function BillingSettings() {
 
         {user.isPro && (
           <p className="mt-6 border-t border-ink/8 pt-6 text-xs text-ink/30">
-            Cancellation via Paystack dashboard is not wired in the UI yet — contact
-            support or manage via Paystack if you need to stop renewal.
+            Cancellation via the Bachs dashboard is not wired in the UI yet — contact
+            support or manage billing in Bachs if you need to stop renewal.
           </p>
         )}
       </div>

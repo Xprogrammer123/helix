@@ -40,6 +40,12 @@ import {
   freeTierTip,
 } from './config.js';
 import { publish, subscribeDashboard } from './events.js';
+import {
+  bachsConfigured,
+  bachsFetch,
+  metadataUserId,
+  verifyBachsSignature,
+} from './bachs.js';
 
 function rewriteHtml(body: string, name: string): string {
   const prefix = `/tunnel/${name}`;
@@ -115,18 +121,18 @@ function extendPlanExpiry(from?: string | null): string {
   return base.toISOString();
 }
 
-async function activatePro(userId: string, customerCode?: string, subscriptionCode?: string) {
+async function activatePro(userId: string, customerId?: string, subscriptionId?: string) {
   const userDoc = await db.getDocument(DB_ID, 'users', userId);
   const updates: Record<string, unknown> = {
     plan: 'pro',
     plan_expires_at: extendPlanExpiry(userDoc.plan_expires_at as string | undefined),
   };
-  if (customerCode) updates.paystack_customer_code = customerCode;
-  if (subscriptionCode) updates.paystack_subscription_code = subscriptionCode;
+  if (customerId) updates.bachs_customer_id = customerId;
+  if (subscriptionId) updates.bachs_subscription_id = subscriptionId;
   await db.updateDocument(DB_ID, 'users', userId, updates);
 }
 
-const PRO_PRICE_KOBO = 250_000;
+const PRO_PRICE = { currency: 'NGN', amount: '2500.00' };
 
 const app = express();
 app.set('trust proxy', 1);
@@ -135,40 +141,57 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/webhooks/paystack', express.raw({ type: 'application/json' }), async (req, res) => {
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  if (!secret) return res.status(503).send('Not configured');
-
-  const signature = req.headers['x-paystack-signature'] as string;
-  const hash = crypto.createHmac('sha512', secret).update(req.body).digest('hex');
-  if (hash !== signature) {
-    return res.status(401).send('Invalid signature');
+app.post('/webhooks/bachs', express.raw({ type: 'application/json' }), async (req, res) => {
+  const secret = process.env.BACHS_WEBHOOK_SECRET;
+  if (secret) {
+    const ok = verifyBachsSignature(
+      req.body,
+      secret,
+      req.headers['x-bachs-timestamp'] as string | undefined,
+      req.headers['x-bachs-signature'] as string | undefined
+    );
+    if (!ok) return res.status(401).send('Invalid signature');
+  } else if (process.env.NODE_ENV === 'production') {
+    return res.status(503).send('Not configured');
   }
 
   const event = JSON.parse(req.body.toString());
-  const eventType = event.event;
-  const data = event.data;
+  const eventType = event.type as string;
+  const data = (event.data ?? {}) as Record<string, unknown>;
 
   try {
-    if (eventType === 'charge.success') {
-      const userId = data.metadata?.user_id;
-      if (userId) {
-        await activatePro(userId, data.customer?.customer_code, data.subscription_code);
+    if (eventType === 'checkout.completed') {
+      const paid =
+        data.payment_status === 'paid' ||
+        data.payment_status === 'succeeded' ||
+        data.status === 'completed';
+      if (paid) {
+        const userId = metadataUserId(data);
+        const customer = data.customer as { customer_id?: string; id?: string } | undefined;
+        const subscription = data.subscription as { subscription_id?: string } | null;
+        if (userId) {
+          await activatePro(
+            userId,
+            customer?.customer_id || customer?.id,
+            subscription?.subscription_id
+          );
+        }
       }
-    } else if (eventType === 'subscription.disable' || eventType === 'invoice.payment_failed') {
-      const subCode = data.subscription_code || data.subscription?.subscription_code;
-      if (subCode) {
+    } else if (eventType === 'customer.subscription.deleted' || eventType === 'invoice.payment_failed') {
+      const subId =
+        (data.subscription_id as string | undefined) ||
+        ((data.subscription as { subscription_id?: string } | undefined)?.subscription_id);
+      if (subId) {
         const users = await db.listDocuments(DB_ID, 'users', [
-          Query.equal('paystack_subscription_code', subCode),
+          Query.equal('bachs_subscription_id', subId),
         ]);
         if (users.total > 0) {
-          const u = users.documents[0];
-          await db.updateDocument(DB_ID, 'users', u.$id, { plan: 'free' });
+          await db.updateDocument(DB_ID, 'users', users.documents[0].$id, { plan: 'free' });
         }
       }
     }
   } catch (err) {
-    console.error('[relay] webhook handler error:', err);
+    console.error('[relay] bachs webhook error:', err);
     return res.status(500).send('Handler error');
   }
 
@@ -614,65 +637,88 @@ app.post('/api/billing/initialize', async (req, res) => {
   const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  if (!secret) return res.status(503).json({ error: 'Billing not configured' });
+  if (!bachsConfigured()) {
+    return res.status(503).json({ error: 'Billing not configured' });
+  }
 
-  const dashboardUrl = DASHBOARD_URL;
+  const dashboardUrl = DASHBOARD_URL.replace(/\/$/, '');
   const email = user.email || `${user.username}@users.helix.dev`;
+  const name = user.name || user.username || 'Helix user';
+  const productId = process.env.BACHS_PRODUCT_ID;
 
-  const initRes = await fetch('https://api.paystack.co/transaction/initialize', {
+  const payload: Record<string, unknown> = {
+    customer: { email, name },
+    success_url: `${dashboardUrl}/dashboard/upgrade/callback`,
+    cancel_url: `${dashboardUrl}/dashboard/upgrade`,
+    metadata: { user_id: user.$id, plan: 'pro' },
+    reference: `helix-pro-${user.$id}-${Date.now()}`,
+  };
+
+  if (productId) {
+    payload.product_cart = [{ product_id: productId, quantity: 1 }];
+  } else {
+    payload.pricing = { ...PRO_PRICE, price_type: 'fixed' };
+    payload.billing_currency = PRO_PRICE.currency;
+  }
+
+  const { ok, data } = await bachsFetch('/v1/checkout-sessions', {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${secret}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email,
-      amount: PRO_PRICE_KOBO,
-      callback_url: `${dashboardUrl}/dashboard/upgrade/callback`,
-      metadata: { user_id: user.$id, custom_fields: [{ display_name: 'Plan', variable_name: 'plan', value: 'pro' }] },
-    }),
+    body: JSON.stringify(payload),
   });
 
-  const data = await initRes.json();
-  if (!data.status) {
-    console.error('[relay] Paystack init failed:', data);
-    return res.status(502).json({ error: data.message || 'Payment initialization failed' });
+  if (!ok || !data.checkout_url) {
+    console.error('[relay] Bachs checkout failed:', data);
+    return res.status(502).json({
+      error: data.detail || data.error || 'Payment initialization failed',
+    });
   }
 
   res.json({
-    authorization_url: data.data.authorization_url,
-    reference: data.data.reference,
+    checkout_url: data.checkout_url,
+    authorization_url: data.checkout_url,
+    checkout_id: data.checkout_id,
+    reference: data.reference,
   });
 });
 
 app.get('/api/billing/verify', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
-  const reference = req.query.reference as string;
+  const checkoutId = (req.query.checkout_id || req.query.reference) as string;
   if (!token) return res.status(401).json({ error: 'Missing token' });
-  if (!reference) return res.status(400).json({ error: 'Missing reference' });
+  if (!checkoutId) return res.status(400).json({ error: 'Missing checkout_id' });
 
   const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  if (!secret) return res.status(503).json({ error: 'Billing not configured' });
-
-  const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-    headers: { Authorization: `Bearer ${secret}` },
-  });
-  const data = await verifyRes.json();
-
-  if (!data.status || data.data.status !== 'success') {
-    return res.status(400).json({ error: 'Payment not verified', details: data.data?.gateway_response });
+  if (!bachsConfigured()) {
+    return res.status(503).json({ error: 'Billing not configured' });
   }
 
-  const metaUserId = data.data.metadata?.user_id;
-  if (metaUserId !== user.$id) {
+  const { ok, data } = await bachsFetch(
+    `/v1/checkout-sessions/${encodeURIComponent(checkoutId)}`
+  );
+
+  if (!ok) {
+    return res.status(400).json({ error: 'Payment not verified', details: data });
+  }
+
+  const paid =
+    data.status === 'completed' &&
+    (data.payment_status === 'succeeded' ||
+      data.payment_status === 'paid' ||
+      data.charge?.status === 'succeeded');
+
+  if (!paid) {
+    return res.status(400).json({ error: 'Payment not verified', details: data.payment_status });
+  }
+
+  const metaUserId = metadataUserId(data);
+  if (metaUserId && metaUserId !== user.$id) {
     return res.status(403).json({ error: 'Payment does not belong to this account' });
   }
 
-  await activatePro(user.$id, data.data.customer?.customer_code);
+  const customer = data.customer as { id?: string; customer_id?: string } | undefined;
+  await activatePro(user.$id, customer?.id || customer?.customer_id);
 
   const updated = await db.getDocument(DB_ID, 'users', user.$id);
   res.json({ ok: true, ...userPublicProfile(updated as UserDoc) });

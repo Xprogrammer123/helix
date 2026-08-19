@@ -24,8 +24,8 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
   async function startCheckout() {
     const res = await fetch("/api/billing/initialize", { method: "POST" });
     const data = await res.json();
-    if (data.authorization_url) {
-      window.location.href = data.authorization_url;
+    if (data.checkout_url || data.authorization_url) {
+      window.location.href = data.checkout_url ?? data.authorization_url;
     }
   }
 

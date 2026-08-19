@@ -22,7 +22,8 @@ export function UpgradePage() {
       const res = await fetch("/api/billing/initialize", { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
-      if (data.authorization_url) window.location.href = data.authorization_url;
+      if (data.checkout_url || data.authorization_url)
+        window.location.href = data.checkout_url ?? data.authorization_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
@@ -55,7 +56,7 @@ export function UpgradePage() {
             loading ? "opacity-60" : "hover:opacity-90"
           )}
         >
-          {loading ? "Redirecting to Paystack…" : "Upgrade with Paystack"}
+          {loading ? "Redirecting to Bachs…" : "Upgrade with Bachs"}
         </button>
         {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
       </div>

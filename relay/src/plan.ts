@@ -5,6 +5,8 @@ export type UserDoc = {
   plan_expires_at?: string;
   paystack_customer_code?: string;
   paystack_subscription_code?: string;
+  bachs_customer_id?: string;
+  bachs_subscription_id?: string;
   token?: string;
   radon_user_id?: string;
   email?: string;

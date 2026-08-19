@@ -90,6 +90,8 @@ async function main() {
   await createStringAttr("users", "name", 255);
   await createStringAttr("users", "plan", 32);
   await createStringAttr("users", "plan_expires_at", 64);
+  await createStringAttr("users", "bachs_customer_id", 128);
+  await createStringAttr("users", "bachs_subscription_id", 128);
   await createStringAttr("users", "paystack_customer_code", 128);
   await createStringAttr("users", "paystack_subscription_code", 128);
   await createStringAttr("users", "github_id", 64);

@@ -13,14 +13,15 @@ export default function UpgradeCallbackClient() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const reference = searchParams.get("reference");
-    if (!reference) {
+    const checkoutId =
+      searchParams.get("checkout_id") ?? searchParams.get("reference");
+    if (!checkoutId) {
       setStatus("error");
-      setError("Missing payment reference");
+      setError("Missing checkout id");
       return;
     }
 
-    fetch(`/api/billing/verify?reference=${encodeURIComponent(reference)}`)
+    fetch(`/api/billing/verify?checkout_id=${encodeURIComponent(checkoutId)}`)
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Verification failed");
