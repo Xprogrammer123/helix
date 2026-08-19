@@ -30,7 +30,7 @@ type TunnelMeta = {
   idleTtlMs: number;
 };
 
-import { auth } from './auth.js';
+import { auth, emailDelivery } from './auth.js';
 import { resolveUserFromAuth, findOrCreateUserFromRadon } from './users.js';
 import {
   RELAY_URL,
@@ -415,7 +415,7 @@ app.post('/api/auth/cli/send-code', async (req, res) => {
 
   try {
     await auth.emailCode.sendCode({ email });
-    res.json({ ok: true });
+    res.json({ ok: true, delivery: emailDelivery });
   } catch (err) {
     console.error('[relay] cli send-code error:', err);
     res.status(500).json({ error: 'Failed to send code' });

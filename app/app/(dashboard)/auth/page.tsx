@@ -43,7 +43,11 @@ function AuthCard() {
         return;
       }
       setSent(true);
-      toast("Check your inbox for a 6-digit code.");
+      toast(
+        process.env.NODE_ENV === "development"
+          ? "Dev mode: copy the code from the Next.js terminal."
+          : "Check your inbox for a 6-digit code."
+      );
     } finally {
       setLoading(false);
     }

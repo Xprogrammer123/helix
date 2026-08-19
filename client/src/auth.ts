@@ -51,7 +51,12 @@ export async function login(): Promise<{ token: string; username: string }> {
     );
   }
 
-  console.log("Check your inbox for a 6-digit code.");
+  const sent = (await sendRes.json().catch(() => ({}))) as { delivery?: string };
+  if (sent.delivery === "console") {
+    console.log("Dev mode: copy the 6-digit code from the relay terminal.");
+  } else {
+    console.log("Check your inbox for a 6-digit code.");
+  }
   const code = await prompt("Code: ");
   if (!code) throw new Error("Code is required");
 
