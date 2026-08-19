@@ -7,7 +7,7 @@ Helix is a lightweight, open-source tunneling tool — an ngrok alternative buil
 ```bash
 helix login
 helix myapp 3000
-# → https://helix.onrender.com/tunnel/myapp/
+# → https://helix-um9b.onrender.com/tunnel/myapp/
 ```
 
 ## Why
@@ -67,7 +67,7 @@ helix <name> <port>
 helix myapp 3000
 ```
 
-Your local server on port 3000 is now live at `https://helix.onrender.com/tunnel/myapp/`.
+Your local server on port 3000 is now live at `https://helix-um9b.onrender.com/tunnel/myapp/`.
 
 ## Self-hosting
 

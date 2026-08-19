@@ -1,4 +1,4 @@
-const RELAY_BASE = (process.env.RELAY_URL || 'https://helix-t47s.onrender.com').replace(/\/$/, '');
+const RELAY_BASE = (process.env.RELAY_URL || 'https://helix-um9b.onrender.com').replace(/\/$/, '');
 
 export function getRelayHttpUrl(): string {
   return RELAY_BASE.replace(/^wss/i, 'https').replace(/^ws/i, 'http');
@@ -13,6 +13,6 @@ export function getRelayWsUrl(): string {
 export const RELAY_HTTP = getRelayHttpUrl();
 export const RELAY_WS = getRelayWsUrl();
 export const DASHBOARD_UPGRADE_URL =
-  (process.env.DASHBOARD_URL || 'https://helix01.vercel.app').replace(/\/$/, '') +
+  (process.env.DASHBOARD_URL || 'https://helix.pxxl.click').replace(/\/$/, '') +
   '/dashboard/upgrade';
 
