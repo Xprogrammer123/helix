@@ -1,5 +1,5 @@
 import { radonNextHandler } from "@radonsdk/auth/integrations/next";
-import { getAuth } from "@/lib/radon";
+import { ensureAuthReady, getAuth } from "@/lib/radon";
 
 type RouteHandler = ReturnType<typeof radonNextHandler>;
 
@@ -16,5 +16,11 @@ function getHandler(): RouteHandler {
   return handler;
 }
 
-export const GET = (req: Request) => getHandler()(req);
-export const POST = (req: Request) => getHandler()(req);
+export const GET = async (req: Request) => {
+  await ensureAuthReady();
+  return getHandler()(req);
+};
+export const POST = async (req: Request) => {
+  await ensureAuthReady();
+  return getHandler()(req);
+};

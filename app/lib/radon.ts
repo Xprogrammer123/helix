@@ -6,6 +6,7 @@ import { APP_URL } from "./urls";
 
 let pool: Pool | null = null;
 let authInstance: Radon | null = null;
+let initPromise: Promise<void> | null = null;
 
 const consoleSender: EmailSender = {
   async send({ to, subject, text, html }) {
@@ -83,4 +84,16 @@ export function getAuth(): Radon {
   }
 
   return authInstance;
+}
+
+export async function ensureAuthReady() {
+  const auth = getAuth();
+  if (!initPromise) {
+    initPromise = auth.init().catch((err) => {
+      initPromise = null;
+      throw err;
+    });
+  }
+  await initPromise;
+  return auth;
 }
