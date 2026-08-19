@@ -41,6 +41,9 @@ const sender =
         from: process.env.RADON_EMAIL_FROM || 'Helix <auth@helix.dev>',
       });
 
+// Used outside Radon auth flows (e.g. sending invoice notifications).
+export const emailSender = sender;
+
 export const auth = new Radon({
   adapter: postgresAdapter(pool),
   session: { secret: process.env.RADON_SECRET },

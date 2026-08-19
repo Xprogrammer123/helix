@@ -30,7 +30,7 @@ type TunnelMeta = {
   idleTtlMs: number;
 };
 
-import { auth, emailDelivery } from './auth.js';
+import { auth, emailDelivery, emailSender } from './auth.js';
 import { resolveUserFromAuth, findOrCreateUserFromRadon } from './users.js';
 import {
   RELAY_URL,
@@ -117,6 +117,16 @@ function userPublicProfile(user: UserDoc) {
   };
 }
 
+function extractBachsCustomerEmail(data: Record<string, unknown>): string | undefined {
+  const customer = data.customer as Record<string, unknown> | undefined;
+  const email =
+    (typeof customer?.email === 'string' ? customer.email : undefined) ??
+    (typeof (data as any).customer_email === 'string' ? (data as any).customer_email : undefined) ??
+    (typeof (data as any).email === 'string' ? (data as any).email : undefined);
+
+  return email ? String(email) : undefined;
+}
+
 function extendPlanExpiry(from?: string | null): string {
   const base = from && new Date(from) > new Date() ? new Date(from) : new Date();
   base.setDate(base.getDate() + 30);
@@ -181,6 +191,41 @@ app.post(
           ]);
           if (users.total > 0) {
             await db.updateDocument(DB_ID, 'users', users.documents[0].$id, { plan: 'free' });
+          }
+        }
+      }
+
+      if (event.type === 'invoice.paid') {
+        const customerEmail = extractBachsCustomerEmail(data);
+        const invoiceId =
+          (typeof (data as any).invoice_id === 'string'
+            ? (data as any).invoice_id
+            : undefined) ??
+          (typeof (data as any).invoice === 'string' ? (data as any).invoice : undefined) ??
+          (typeof event.objectId === 'string' ? event.objectId : undefined);
+
+        if (customerEmail) {
+          // Best-effort: avoid double-sending in at-least-once delivery by tracking in-memory ids.
+          // If you run multiple relay instances, dedupe should be persisted (DB) later.
+          const key = `invoice.paid:${event.id}`;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const cache = (globalThis as any).__helix_invoice_sent ?? new Set<string>();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (globalThis as any).__helix_invoice_sent = cache;
+          if (!cache.has(key)) {
+            cache.add(key);
+            await emailSender.send({
+              to: customerEmail,
+              subject: `Helix Pro invoice paid${invoiceId ? ` (${invoiceId})` : ''}`,
+              text:
+                invoiceId
+                  ? `Hi! Your Helix Pro invoice (${invoiceId}) is paid and your Pro access is active.`
+                  : `Hi! Your Helix Pro invoice is paid and your Pro access is active.`,
+              html:
+                invoiceId
+                  ? `<p>Hi!</p><p>Your <b>Helix Pro</b> invoice (<code>${invoiceId}</code>) is paid and your Pro access is active.</p>`
+                  : `<p>Hi!</p><p>Your <b>Helix Pro</b> invoice is paid and your Pro access is active.</p>`,
+            });
           }
         }
       }
