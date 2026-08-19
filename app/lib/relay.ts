@@ -12,4 +12,4 @@ export type {
   RequestsResponse,
   UpgradeTrigger,
 } from "./relay-types";
-export { PRO_PRICE_LABEL, UPGRADE_TRIGGERS } from "./relay-types";
+export { PLAN_COMPARE, PRO_PRICE_LABEL, UPGRADE_TRIGGERS } from "./relay-types";

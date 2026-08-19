@@ -193,9 +193,21 @@ export function DashboardHome({ publicBase }: DashboardHomeProps) {
                         />
                       </div>
                     </div>
-                    <span className="shrink-0 font-mono text-sm tabular-nums text-ink/45">
-                      {t.requestCount}
-                    </span>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="font-mono text-sm tabular-nums text-ink/45">
+                        {t.requestCount}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[11px] font-medium",
+                          t.live
+                            ? "bg-emerald-500/15 text-emerald-300"
+                            : "bg-red-500/15 text-red-300"
+                        )}
+                      >
+                        {t.live ? "Live" : "Offline"}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}

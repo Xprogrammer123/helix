@@ -4,6 +4,7 @@ import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, SparklesIcon } from "@hugeicons/core-free-icons";
 import {
+  PLAN_COMPARE,
   PRO_PRICE_LABEL,
   UPGRADE_TRIGGERS,
   type UpgradeTrigger,
@@ -54,23 +55,13 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
         <h2 className="pr-8 font-display text-xl font-bold text-ink">{copy.headline}</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink/45">{copy.subline}</p>
 
-        <ul className="mt-5 space-y-3 text-sm text-ink/55">
-          <ProBullet
-            title="Persistent demo links"
-            body="No idle disconnect — your tunnel stays up through client calls."
-          />
-          <ProBullet
-            title="Password-protected tunnels"
-            body="Share the URL in the meeting, send the password over DM."
-          />
-          <ProBullet
-            title="Concurrent tunnels"
-            body="Run Stripe, GitHub, and your app locally — all tunneled at once."
-          />
-          <ProBullet
-            title="Full request history"
-            body="Up to 500 logged requests per tunnel for deeper debugging."
-          />
+        <ul className="mt-5 divide-y divide-ink/8 rounded-xl border border-ink/10 text-sm">
+          {PLAN_COMPARE.map((row) => (
+            <li key={row.label} className="flex items-baseline justify-between gap-4 px-4 py-2.5">
+              <span className="text-ink/50">{row.label}</span>
+              <span className="font-mono text-ink">{row.pro}</span>
+            </li>
+          ))}
         </ul>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -91,18 +82,6 @@ export function UpgradeModal({ open, trigger, onClose }: UpgradeModalProps) {
         </div>
       </div>
     </div>
-  );
-}
-
-function ProBullet({ title, body }: { title: string; body: string }) {
-  return (
-    <li className="flex gap-3">
-      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
-      <div>
-        <span className="font-medium text-ink/80">{title}</span>
-        <span className="text-ink/40"> — {body}</span>
-      </div>
-    </li>
   );
 }
 

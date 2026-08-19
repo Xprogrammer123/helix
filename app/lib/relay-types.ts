@@ -70,22 +70,19 @@ export const UPGRADE_TRIGGERS: Record<
   { headline: string; subline: string }
 > = {
   "password-protection": {
-    headline: "Share demo links with a password",
-    subline:
-      "Keep your tunnel URL clean for clients — send the password separately.",
+    headline: "Password-lock a tunnel",
+    subline: "Share the URL. Keep the password off the call.",
   },
   "concurrent-tunnels": {
-    headline: "Run multiple tunnels at once",
-    subline:
-      "Test webhooks and microservices side-by-side without stopping your main tunnel.",
+    headline: "Run more than one tunnel",
+    subline: "Free allows 1 live tunnel.",
   },
   "full-history": {
-    headline: "See your full request history",
-    subline:
-      "Debug flaky issues with up to 500 logged requests instead of the last 50.",
+    headline: "See more than the last 50 hits",
+    subline: "Pro logs 500 requests per tunnel.",
   },
   general: {
-    headline: "Upgrade to Helix Pro",
-    subline: "Persistent demo links, concurrent tunnels, and full history.",
+    headline: "Helix Pro",
+    subline: "Longer sessions. More tunnels. Password lock.",
   },
 };

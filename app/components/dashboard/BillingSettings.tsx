@@ -66,8 +66,7 @@ export function BillingSettings() {
         {!user.isPro && (
           <div className="mt-6 border-t border-ink/8 pt-6">
             <p className="text-sm text-ink/45">
-              Pro is {PRO_PRICE_LABEL} — persistent demos, concurrent tunnels,
-              password protection, and full history.
+              Pro is {PRO_PRICE_LABEL}.
             </p>
             <Link
               href="/dashboard/upgrade"
@@ -80,8 +79,7 @@ export function BillingSettings() {
 
         {user.isPro && (
           <p className="mt-6 border-t border-ink/8 pt-6 text-xs text-ink/30">
-            Cancellation via the Bachs dashboard is not wired in the UI yet — contact
-            support or manage billing in Bachs if you need to stop renewal.
+            Cancellation is managed in Bachs.
           </p>
         )}
       </div>

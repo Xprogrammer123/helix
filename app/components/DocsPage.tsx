@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HelixField } from "@/components/HelixField";
+import { PLAN_COMPARE } from "@/lib/relay";
 import { cn } from "@/lib/utils";
 
 const sections = [
@@ -208,8 +209,7 @@ export function DocsPage() {
 
             <h2 className="mt-8 text-lg font-medium">Billing</h2>
             <p className="mt-2 text-sm text-ink/40">
-              Check your plan and upgrade to Helix Pro when you need longer
-              sessions, more concurrent tunnels, or password protection.
+              Free or Pro. Upgrade from Dashboard → Upgrade.
             </p>
           </section>
 
@@ -217,43 +217,25 @@ export function DocsPage() {
             <h1 className="font-display text-4xl font-bold tracking-tight">
               Helix Pro
             </h1>
-            <p className="mt-3 text-ink/45">
-              Free is enough for quick demos. Pro is for work that needs the
-              tunnel to stay up and scale with you.
-            </p>
+            <p className="mt-3 text-ink/45">₦2,500/mo.</p>
 
             <div className="mt-8 overflow-hidden rounded-xl border border-ink/10">
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-ink/10 bg-surface text-xs tracking-wide text-ink/30 uppercase">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Feature</th>
+                    <th className="px-4 py-3 font-medium" />
                     <th className="px-4 py-3 font-medium">Free</th>
                     <th className="px-4 py-3 font-medium">Pro</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-ink/8">
-                  <tr>
-                    <td className="px-4 py-3 text-ink/70">Active tunnels</td>
-                    <td className="px-4 py-3 text-ink/50">1</td>
-                    <td className="px-4 py-3 text-ink/50">Unlimited</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 text-ink/70">Request history</td>
-                    <td className="px-4 py-3 text-ink/50">Recent only</td>
-                    <td className="px-4 py-3 text-ink/50">Full history</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 text-ink/70">Idle timeout</td>
-                    <td className="px-4 py-3 text-ink/50">Short</td>
-                    <td className="px-4 py-3 text-ink/50">Long-lived</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 text-ink/70">
-                      Password protection
-                    </td>
-                    <td className="px-4 py-3 text-ink/50">—</td>
-                    <td className="px-4 py-3 text-ink/50">Yes</td>
-                  </tr>
+                  {PLAN_COMPARE.map((row) => (
+                    <tr key={row.label}>
+                      <td className="px-4 py-3 text-ink/70">{row.label}</td>
+                      <td className="px-4 py-3 font-mono text-ink/50">{row.free}</td>
+                      <td className="px-4 py-3 font-mono text-ink/50">{row.pro}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

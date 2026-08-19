@@ -4,18 +4,17 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Cancel01Icon,
   FlashIcon,
   LockIcon,
   Route01Icon,
   ServerStack01Icon,
   TerminalIcon,
-  Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import { CopyButton } from "@/components/CopyButton";
 import { HelixField } from "@/components/HelixField";
 import { TunnelFlow } from "@/components/TunnelFlow";
 import { BorderBeam } from "@/components/ui/border-beam";
+import { PLAN_COMPARE } from "@/lib/relay";
 import {
   AnimatedSpan,
   Terminal,
@@ -281,9 +280,7 @@ export function LandingPage() {
                   Pricing
                 </p>
                 <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                  Free to ship.
-                  <br />
-                  Pro when it&apos;s work.
+                  Free. Pro when the demo matters.
                 </h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
