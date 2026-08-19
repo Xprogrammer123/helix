@@ -41,11 +41,13 @@ import {
 } from './config.js';
 import { publish, subscribeDashboard } from './events.js';
 import {
-  bachsConfigured,
-  bachsFetch,
+  checkoutIdFromRaw,
   metadataUserId,
-  verifyBachsSignature,
-} from './bachs.js';
+  payments,
+  paymentsConfigured,
+  proAmount,
+  webhookHeaders,
+} from './payments.js';
 
 function rewriteHtml(body: string, name: string): string {
   const prefix = `/tunnel/${name}`;
@@ -132,8 +134,6 @@ async function activatePro(userId: string, customerId?: string, subscriptionId?:
   await db.updateDocument(DB_ID, 'users', userId, updates);
 }
 
-const PRO_PRICE = { currency: 'NGN', amount: '2500.00' };
-
 const app = express();
 app.set('trust proxy', 1);
 
@@ -141,32 +141,26 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/webhooks/bachs', express.raw({ type: 'application/json' }), async (req, res) => {
-  const secret = process.env.BACHS_WEBHOOK_SECRET;
-  if (secret) {
-    const ok = verifyBachsSignature(
-      req.body,
-      secret,
-      req.headers['x-bachs-timestamp'] as string | undefined,
-      req.headers['x-bachs-signature'] as string | undefined
-    );
-    if (!ok) return res.status(401).send('Invalid signature');
-  } else if (process.env.NODE_ENV === 'production') {
-    return res.status(503).send('Not configured');
-  }
+app.post(
+  ['/webhooks/payments', '/webhooks/bachs'],
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    if (!paymentsConfigured()) return res.status(503).send('Not configured');
 
-  const event = JSON.parse(req.body.toString());
-  const eventType = event.type as string;
-  const data = (event.data ?? {}) as Record<string, unknown>;
+    try {
+      const event = await payments.webhooks.handle(
+        { body: req.body as Buffer, headers: webhookHeaders(req.headers) },
+        { provider: 'bachs' }
+      );
 
-  try {
-    if (eventType === 'checkout.completed') {
-      const paid =
-        data.payment_status === 'paid' ||
-        data.payment_status === 'succeeded' ||
-        data.status === 'completed';
-      if (paid) {
-        const userId = metadataUserId(data);
+      const raw = event.raw as Record<string, unknown> | undefined;
+      const data = (raw?.data ?? {}) as Record<string, unknown>;
+
+      if (
+        event.type === 'payment.succeeded' ||
+        event.providerEventType === 'checkout.completed'
+      ) {
+        const userId = metadataUserId(raw) ?? metadataUserId(data);
         const customer = data.customer as { customer_id?: string; id?: string } | undefined;
         const subscription = data.subscription as { subscription_id?: string } | null;
         if (userId) {
@@ -176,27 +170,32 @@ app.post('/webhooks/bachs', express.raw({ type: 'application/json' }), async (re
             subscription?.subscription_id
           );
         }
-      }
-    } else if (eventType === 'customer.subscription.deleted' || eventType === 'invoice.payment_failed') {
-      const subId =
-        (data.subscription_id as string | undefined) ||
-        ((data.subscription as { subscription_id?: string } | undefined)?.subscription_id);
-      if (subId) {
-        const users = await db.listDocuments(DB_ID, 'users', [
-          Query.equal('bachs_subscription_id', subId),
-        ]);
-        if (users.total > 0) {
-          await db.updateDocument(DB_ID, 'users', users.documents[0].$id, { plan: 'free' });
+      } else if (event.type === 'subscription.cancelled') {
+        const subId =
+          event.objectId ||
+          (data.subscription_id as string | undefined) ||
+          ((data.subscription as { subscription_id?: string } | undefined)?.subscription_id);
+        if (subId) {
+          const users = await db.listDocuments(DB_ID, 'users', [
+            Query.equal('bachs_subscription_id', subId),
+          ]);
+          if (users.total > 0) {
+            await db.updateDocument(DB_ID, 'users', users.documents[0].$id, { plan: 'free' });
+          }
         }
       }
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      if (code === 'webhook_signature_invalid') {
+        return res.status(400).send('Invalid signature');
+      }
+      console.error('[relay] payments webhook error:', err);
+      return res.status(500).send('Handler error');
     }
-  } catch (err) {
-    console.error('[relay] bachs webhook error:', err);
-    return res.status(500).send('Handler error');
-  }
 
-  res.send('OK');
-});
+    res.send('OK');
+  }
+);
 
 app.use(express.json());
 
@@ -637,7 +636,7 @@ app.post('/api/billing/initialize', async (req, res) => {
   const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
-  if (!bachsConfigured()) {
+  if (!paymentsConfigured()) {
     return res.status(503).json({ error: 'Billing not configured' });
   }
 
@@ -646,39 +645,42 @@ app.post('/api/billing/initialize', async (req, res) => {
   const name = user.name || user.username || 'Helix user';
   const productId = process.env.BACHS_PRODUCT_ID;
 
-  const payload: Record<string, unknown> = {
-    customer: { email, name },
-    success_url: `${dashboardUrl}/dashboard/upgrade/callback`,
-    cancel_url: `${dashboardUrl}/dashboard/upgrade`,
-    metadata: { user_id: user.$id, plan: 'pro' },
-    reference: `helix-pro-${user.$id}-${Date.now()}`,
-  };
+  try {
+    const charge = await payments.charge({
+      amount: proAmount(),
+      customer: { email, name, id: user.$id },
+      returnUrl: `${dashboardUrl}/dashboard/upgrade/callback`,
+      reference: `helix-pro-${user.$id}-${Date.now()}`,
+      metadata: { user_id: user.$id, plan: 'pro' },
+      providerOptions: {
+        cancelUrl: `${dashboardUrl}/dashboard/upgrade`,
+        ...(productId ? { product_cart: [{ product_id: productId, quantity: 1 }] } : {}),
+      },
+    });
 
-  if (productId) {
-    payload.product_cart = [{ product_id: productId, quantity: 1 }];
-  } else {
-    payload.pricing = { ...PRO_PRICE, price_type: 'fixed' };
-    payload.billing_currency = PRO_PRICE.currency;
-  }
+    const raw = charge.raw as Record<string, unknown> | undefined;
+    const checkoutId = charge.id || checkoutIdFromRaw(raw);
+    const checkoutUrl =
+      charge.redirectUrl ||
+      (typeof raw?.checkout_url === 'string' ? raw.checkout_url : undefined);
 
-  const { ok, data } = await bachsFetch('/v1/checkout-sessions', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
+    if (!checkoutUrl) {
+      console.error('[relay] Bachs checkout missing redirect URL:', charge.raw);
+      return res.status(502).json({ error: 'Payment initialization failed' });
+    }
 
-  if (!ok || !data.checkout_url) {
-    console.error('[relay] Bachs checkout failed:', data);
+    res.json({
+      checkout_url: checkoutUrl,
+      authorization_url: checkoutUrl,
+      checkout_id: checkoutId,
+      reference: charge.id,
+    });
+  } catch (err) {
+    console.error('[relay] Radon Payments charge failed:', err);
     return res.status(502).json({
-      error: data.detail || data.error || 'Payment initialization failed',
+      error: err instanceof Error ? err.message : 'Payment initialization failed',
     });
   }
-
-  res.json({
-    checkout_url: data.checkout_url,
-    authorization_url: data.checkout_url,
-    checkout_id: data.checkout_id,
-    reference: data.reference,
-  });
 });
 
 app.get('/api/billing/verify', async (req, res) => {
@@ -690,38 +692,38 @@ app.get('/api/billing/verify', async (req, res) => {
   const user = await resolveUserFromAuth(token);
   if (!user) return res.status(401).json({ error: 'Invalid token' });
 
-  if (!bachsConfigured()) {
+  if (!paymentsConfigured()) {
     return res.status(503).json({ error: 'Billing not configured' });
   }
 
-  const { ok, data } = await bachsFetch(
-    `/v1/checkout-sessions/${encodeURIComponent(checkoutId)}`
-  );
+  try {
+    const charge = await payments.retrieveCharge(checkoutId, { provider: 'bachs' });
 
-  if (!ok) {
-    return res.status(400).json({ error: 'Payment not verified', details: data });
+    if (charge.status !== 'succeeded') {
+      return res.status(400).json({
+        error: 'Payment not verified',
+        details: charge.status,
+      });
+    }
+
+    const metaUserId = metadataUserId(charge.raw) ?? metadataUserId(charge.metadata);
+    if (metaUserId && metaUserId !== user.$id) {
+      return res.status(403).json({ error: 'Payment does not belong to this account' });
+    }
+
+    const raw = charge.raw as Record<string, unknown> | undefined;
+    const customer = raw?.customer as { id?: string; customer_id?: string } | undefined;
+    await activatePro(user.$id, customer?.id || customer?.customer_id);
+
+    const updated = await db.getDocument(DB_ID, 'users', user.$id);
+    res.json({ ok: true, ...userPublicProfile(updated as UserDoc) });
+  } catch (err) {
+    console.error('[relay] Radon Payments verify failed:', err);
+    return res.status(400).json({
+      error: 'Payment not verified',
+      details: err instanceof Error ? err.message : undefined,
+    });
   }
-
-  const paid =
-    data.status === 'completed' &&
-    (data.payment_status === 'succeeded' ||
-      data.payment_status === 'paid' ||
-      data.charge?.status === 'succeeded');
-
-  if (!paid) {
-    return res.status(400).json({ error: 'Payment not verified', details: data.payment_status });
-  }
-
-  const metaUserId = metadataUserId(data);
-  if (metaUserId && metaUserId !== user.$id) {
-    return res.status(403).json({ error: 'Payment does not belong to this account' });
-  }
-
-  const customer = data.customer as { id?: string; customer_id?: string } | undefined;
-  await activatePro(user.$id, customer?.id || customer?.customer_id);
-
-  const updated = await db.getDocument(DB_ID, 'users', user.$id);
-  res.json({ ok: true, ...userPublicProfile(updated as UserDoc) });
 });
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
