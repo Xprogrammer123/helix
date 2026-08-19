@@ -291,29 +291,12 @@ export function LandingPage() {
                   <p className="text-sm text-ink/40">Free</p>
                   <p className="font-display mt-2 text-4xl font-bold text-ink">₦0</p>
                   <ul className="mt-6 space-y-2.5 text-sm text-ink/50">
-                    {[
-                      "1 live tunnel",
-                      "Path-based URLs",
-                      "Email sign-in",
-                    ].map((t) => (
-                      <li key={t} className="flex items-center gap-2">
-                        <HugeiconsIcon
-                          icon={Tick02Icon}
-                          size={14}
-                          color="currentColor"
-                          className="text-accent"
-                        />
-                        {t}
+                    {PLAN_COMPARE.map((row) => (
+                      <li key={row.label} className="flex items-baseline justify-between gap-3">
+                        <span>{row.label}</span>
+                        <span className="font-mono text-ink/35">{row.free}</span>
                       </li>
                     ))}
-                    <li className="flex items-center gap-2 text-ink/30">
-                      <HugeiconsIcon
-                        icon={Cancel01Icon}
-                        size={14}
-                        color="currentColor"
-                      />
-                      Idle timeout
-                    </li>
                   </ul>
                 </div>
                 <div className="relative overflow-hidden rounded-3xl border border-accent/35 bg-accent/[0.07] p-7">
@@ -330,20 +313,10 @@ export function LandingPage() {
                     <span className="text-base font-normal text-ink/40">/mo</span>
                   </p>
                   <ul className="mt-6 space-y-2.5 text-sm text-ink/70">
-                    {[
-                      "Concurrent tunnels",
-                      "Long-lived links",
-                      "Password protection",
-                      "Full request history",
-                    ].map((t) => (
-                      <li key={t} className="flex items-center gap-2">
-                        <HugeiconsIcon
-                          icon={Tick02Icon}
-                          size={14}
-                          color="currentColor"
-                          className="text-accent"
-                        />
-                        {t}
+                    {PLAN_COMPARE.map((row) => (
+                      <li key={row.label} className="flex items-baseline justify-between gap-3">
+                        <span>{row.label}</span>
+                        <span className="font-mono text-ink">{row.pro}</span>
                       </li>
                     ))}
                   </ul>

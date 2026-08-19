@@ -58,6 +58,13 @@ export type UpgradeTrigger =
 
 export const PRO_PRICE_LABEL = "₦2,500/mo";
 
+export const PLAN_COMPARE = [
+  { label: "Live tunnels", free: "1", pro: "Unlimited" },
+  { label: "Idle timeout", free: "2 min", pro: "24 hours" },
+  { label: "Request history", free: "Last 50", pro: "Last 500" },
+  { label: "Password lock", free: "No", pro: "Yes" },
+] as const;
+
 export const UPGRADE_TRIGGERS: Record<
   UpgradeTrigger,
   { headline: string; subline: string }
